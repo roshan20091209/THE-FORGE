@@ -6,3 +6,5 @@ dist/
 .vite/
 
 .vercel
+THE-FORGE.txt
+server/the-forge.db
