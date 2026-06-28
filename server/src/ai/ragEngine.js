@@ -141,10 +141,58 @@ export async function answerFromContext(question, contextChunks, marks, language
   return response || null;
 }
 
-export async function answerBulkQuestions(questions, contextChunks, marks, language) {
-  const context = contextChunks.map(c =>
-    `[Page ${c.page_number}, Chapter: ${c.chapter_name || 'Unknown'}]\n${c.text}`
-  ).join('\n\n---\n\n');
+const SYLLABUS = {
+  physics: {
+    name: 'Physics (Code 042)',
+    theory: '70 marks',
+    chapters: 'Electrostatics, Current Electricity, Magnetic Effects, Electromagnetic Induction, Alternating Current, EM Waves, Ray Optics, Wave Optics, Dual Nature, Atoms, Nuclei, Semiconductor Electronics',
+  },
+  chemistry: {
+    name: 'Chemistry (Code 043)',
+    theory: '70 marks',
+    chapters: 'Solutions, Electrochemistry, Chemical Kinetics, d-and f-Block Elements, Coordination Compounds, Haloalkanes & Haloarenes, Alcohols Phenols Ethers, Aldehydes Ketones Carboxylic Acids, Amines, Biomolecules',
+  },
+  mathematics: {
+    name: 'Mathematics (Code 041)',
+    theory: '80 marks',
+    chapters: 'Relations & Functions, Inverse Trigonometric Functions, Matrices, Determinants, Continuity & Differentiability, Application of Derivatives, Integrals, Application of Integrals, Differential Equations, Vector Algebra, Three Dimensional Geometry, Linear Programming, Probability',
+  },
+};
+
+const SYLLABUS_PROMPT = (subject) => {
+  const s = SYLLABUS[subject];
+  if (!s) return '';
+  return `\n\nThe student is studying ${s.name} (${s.theory} theory). CBSE 2026-27 syllabus chapters: ${s.chapters}. Answer STRICTLY from NCERT textbook knowledge for Class 12. If the question is NOT in the CBSE 2026-27 syllabus, say "Not in syllabus" and nothing else.`;
+};
+
+export async function answerFromSyllabus(question, subject, mode, marks, language) {
+  const systemPrompt = `You are OSM-BRO, a CBSE syllabus-aligned teaching assistant. Answer strictly from the Class 12 NCERT syllabus.${SYLLABUS_PROMPT(subject)}
+${mode === 'explain'
+  ? '- Explain like you\'re talking to a 16-year-old student. Use simple language, analogies, and examples.'
+  : `- Format answer for ${marks || 2} marks following CBSE OSM (On-Screen Marking) step format.`
+}
+${language === 'tamil' ? 'Answer in Tamil.' : language === 'hinglish' ? 'Answer in Hinglish.' : 'Answer in English.'}
+If the topic is not in the CBSE 2026-27 Class 12 syllabus, respond ONLY with "Not in syllabus".`;
+
+  return callNvidia([
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: `Question: ${question}` }
+  ], {
+    temperature: 0.3,
+    max_tokens: 1000,
+    timeout: 30000
+  });
+}
+
+export async function answerBulkQuestions(questions, contextChunks, marks, language, subject) {
+  let context;
+  if (contextChunks.length > 0) {
+    context = contextChunks.map(c =>
+      `[Page ${c.page_number}, Chapter: ${c.chapter_name || 'Unknown'}]\n${c.text}`
+    ).join('\n\n---\n\n');
+  } else {
+    context = SYLLABUS_PROMPT(subject);
+  }
 
   const questionList = questions.map((q, i) => `${i + 1}. ${q}`).join('\n');
 
@@ -178,19 +226,24 @@ Return JSON array: [{ "question": "original text", "answer": "your answer", "pag
   }
 }
 
-export async function generateQuestions(chunks, count, difficulty, questionTypes) {
-  const context = chunks.map(c =>
-    `[Chapter: ${c.chapter_name || 'Unknown'}]\n${c.text}`
-  ).join('\n\n---\n\n');
+export async function generateQuestions(chunks, count, difficulty, questionTypes, subject) {
+  let context;
+  if (chunks.length > 0) {
+    context = chunks.map(c =>
+      `[Chapter: ${c.chapter_name || 'Unknown'}]\n${c.text}`
+    ).join('\n\n---\n\n');
+  } else {
+    context = subject ? `Syllabus: ${subject}. Generate from NCERT Class 12 CBSE 2026-27 syllabus.${SYLLABUS_PROMPT(subject)}` : 'No context available.';
+  }
 
   const typesStr = (questionTypes || ['short', 'long']).join(', ');
 
   const response = await callNvidia([
-    { role: 'system', content: `You are an exam question generator. Generate ${count} ${difficulty || 'medium'} difficulty questions from the textbook content.
+    { role: 'system', content: `You are an exam question generator for CBSE Class 12. Generate ${count} ${difficulty || 'medium'} difficulty questions from the syllabus content.
 Question types: ${typesStr}.
-Include expected marks (2, 5, or 10) and model answers with page references.
+Include expected marks (2, 5, or 10) and model answers with references.
 Return JSON array: [{ "question": "...", "question_type": "short|long|mcq|essay", "marks": 2|5|10, "difficulty": "easy|medium|hard", "model_answer": "...", "page_reference": "page number or null", "chapter_name": "..." }]` },
-    { role: 'user', content: `Textbook Content:\n${context}\n\nGenerate ${count} exam-style questions.` }
+    { role: 'user', content: `${context}\n\nGenerate ${count} exam-style questions.` }
   ], {
     temperature: 0.4,
     max_tokens: 3000,
@@ -208,10 +261,15 @@ Return JSON array: [{ "question": "...", "question_type": "short|long|mcq|essay"
   }
 }
 
-export async function explainConcept(question, contextChunks, language) {
-  const context = contextChunks.map(c =>
-    `[Page ${c.page_number}, Chapter: ${c.chapter_name || 'Unknown'}]\n${c.text}`
-  ).join('\n\n---\n\n');
+export async function explainConcept(question, contextChunks, language, subject) {
+  let context;
+  if (contextChunks.length > 0) {
+    context = contextChunks.map(c =>
+      `[Page ${c.page_number}, Chapter: ${c.chapter_name || 'Unknown'}]\n${c.text}`
+    ).join('\n\n---\n\n');
+  } else {
+    context = SYLLABUS_PROMPT(subject);
+  }
 
   const systemPrompt = `You are a friendly tutor who explains concepts simply, like to a 16-year-old student.
 - Use analogies and real-life examples
@@ -223,7 +281,7 @@ ${language === 'tamil' ? 'Explain in Tamil.' : language === 'hinglish' ? 'Explai
 
   return callNvidia([
     { role: 'system', content: systemPrompt },
-    { role: 'user', content: `Textbook Content:\n${context}\n\nStudent's question: ${question}\n\nExplain this concept simply, like I'm 16 years old.` }
+    { role: 'user', content: `${context}\n\nStudent's question: ${question}\n\nExplain this concept simply, like I'm 16 years old.` }
   ], {
     temperature: 0.5,
     max_tokens: 800,
@@ -231,4 +289,4 @@ ${language === 'tamil' ? 'Explain in Tamil.' : language === 'hinglish' ? 'Explai
   });
 }
 
-export { generateEmbedding, callNvidia };
+export { generateEmbedding, callNvidia, answerFromSyllabus };

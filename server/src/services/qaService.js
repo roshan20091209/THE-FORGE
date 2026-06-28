@@ -1,17 +1,17 @@
 import { supabase } from '../db.js';
-import { generateEmbedding, answerFromContext, answerBulkQuestions, generateQuestions, explainConcept } from '../ai/ragEngine.js';
+import { generateEmbedding, answerFromContext, answerFromSyllabus, answerBulkQuestions, generateQuestions, explainConcept } from '../ai/ragEngine.js';
 import { formatAnswer } from '../ai/osmFormatter.js';
 import { getTextbookChunks } from './textbookService.js';
 
 const RELEVANCE_THRESHOLD = 0.65;
 
-export async function askQuestion({ question, textbookId, chapterId, marks, mode, language, userId }) {
+export async function askQuestion({ question, textbookId, subject, chapterId, marks, mode, language, userId }) {
   const startTime = Date.now();
 
-  const chunks = await getTextbookChunks(textbookId, chapterId ? { chapter_name: undefined } : {});
-  if (!chunks || chunks.length === 0) {
+  const chunks = textbookId ? await getTextbookChunks(textbookId, chapterId ? { chapter_name: undefined } : {}) : [];
+  if ((!chunks || chunks.length === 0) && !subject) {
     return {
-      answer: 'Textbook not indexed yet. Please wait for indexing to complete.',
+      answer: 'Select a subject (Physics/Chemistry/Maths) to ask questions from the CBSE 2026-27 syllabus.',
       source: 'error',
       page_references: [],
       confidence: 0,
@@ -19,27 +19,40 @@ export async function askQuestion({ question, textbookId, chapterId, marks, mode
     };
   }
 
-  const questionEmbedding = await generateEmbedding(question);
-  let relevantChunks = chunks;
+  let topChunks = [];
+  let textbookSubject = subject || null;
 
-  if (questionEmbedding) {
-    const chunksWithScores = chunks.map(chunk => ({
-      ...chunk,
-      score: cosineSimilarity(questionEmbedding, chunk.vector_id ? null : null) || 0.5
-    }));
-    relevantChunks = chunksWithScores.filter(c => c.score >= RELEVANCE_THRESHOLD);
-    if (relevantChunks.length === 0) relevantChunks = chunks.slice(0, 5);
-  } else {
-    relevantChunks = chunks.slice(0, 5);
+  if (chunks && chunks.length > 0) {
+    const questionEmbedding = await generateEmbedding(question);
+    let relevantChunks = chunks;
+    if (questionEmbedding) {
+      const chunksWithScores = chunks.map(chunk => ({
+        ...chunk,
+        score: cosineSimilarity(questionEmbedding, chunk.vector_id ? null : null) || 0.5
+      }));
+      relevantChunks = chunksWithScores.filter(c => c.score >= RELEVANCE_THRESHOLD);
+      if (relevantChunks.length === 0) relevantChunks = chunks.slice(0, 5);
+    } else {
+      relevantChunks = chunks.slice(0, 5);
+    }
+    topChunks = relevantChunks.slice(0, 5);
+
+    if (!textbookSubject) {
+      const tb = await supabase.from('textbooks').select('subject').eq('id', textbookId).single().then(r => r.data);
+      textbookSubject = tb?.subject || null;
+    }
   }
-
-  const topChunks = relevantChunks.slice(0, 5);
 
   const textbook = await supabase.from('textbooks').select('subject').eq('id', textbookId).single()
     .then(r => r.data);
 
   if (mode === 'explain') {
-    const explanation = await explainConcept(question, topChunks, language);
+    let explanation;
+    if (topChunks.length > 0) {
+      explanation = await explainConcept(question, topChunks, language, textbookSubject);
+    } else {
+      explanation = await answerFromSyllabus(question, textbookSubject, 'explain', marks, language);
+    }
     const responseTime = Date.now() - startTime;
 
     await logConversation({
@@ -50,6 +63,7 @@ export async function askQuestion({ question, textbookId, chapterId, marks, mode
 
     return {
       answer: explanation || 'Could not generate explanation.',
+      subject: textbookSubject,
       source: 'textbook',
       page_references: topChunks.map(c => ({ chapter: c.chapter_name, page: c.page_number })),
       confidence: 0.8,
@@ -57,7 +71,12 @@ export async function askQuestion({ question, textbookId, chapterId, marks, mode
     };
   }
 
-  const rawAnswer = await answerFromContext(question, topChunks, marks, language, textbook?.subject);
+  let rawAnswer;
+  if (topChunks.length > 0) {
+    rawAnswer = await answerFromContext(question, topChunks, marks, language, textbookSubject);
+  } else {
+    rawAnswer = await answerFromSyllabus(question, textbookSubject, 'direct', marks, language);
+  }
 
   if (!rawAnswer || rawAnswer.toLowerCase().includes('not in syllabus')) {
     const responseTime = Date.now() - startTime;
@@ -78,7 +97,7 @@ export async function askQuestion({ question, textbookId, chapterId, marks, mode
 
   let formattedAnswer = rawAnswer;
   if (marks && mode !== 'explain') {
-    formattedAnswer = formatAnswer(rawAnswer, marks, textbook?.subject);
+    formattedAnswer = formatAnswer(rawAnswer, marks, textbookSubject);
   }
 
   const responseTime = Date.now() - startTime;
@@ -99,17 +118,19 @@ export async function askQuestion({ question, textbookId, chapterId, marks, mode
   };
 }
 
-export async function solveAssignment({ questions, textbookId, marksPerQuestion, language, userId }) {
+export async function solveAssignment({ questions, textbookId, subject, marksPerQuestion, language, userId }) {
   const startTime = Date.now();
 
-  const chunks = await getTextbookChunks(textbookId);
-  if (!chunks || chunks.length === 0) {
+  const chunks = textbookId ? await getTextbookChunks(textbookId) : [];
+  let results;
+  if (chunks && chunks.length > 0) {
+    const topChunks = chunks.slice(0, 10);
+    results = await answerBulkQuestions(questions, topChunks, marksPerQuestion || 2, language);
+  } else if (subject) {
+    results = await answerBulkQuestions(questions, [], marksPerQuestion || 2, language, subject);
+  } else {
     return { answers: [], incomplete_count: questions.length, not_in_syllabus: questions };
   }
-
-  const topChunks = chunks.slice(0, 10);
-
-  const results = await answerBulkQuestions(questions, topChunks, marksPerQuestion || 2, language);
 
   if (!results) {
     const answers = questions.map(q => ({
@@ -139,16 +160,22 @@ export async function solveAssignment({ questions, textbookId, marksPerQuestion,
   };
 }
 
-export async function generateQuestionBank({ textbookId, chapterId, count, difficulty, questionTypes, userId }) {
-  const filter = {};
-  if (chapterId) filter.chapter_name = null;
-
-  const chunks = await getTextbookChunks(textbookId, filter);
-  if (!chunks || chunks.length === 0) {
-    return { questions: [], message: 'Textbook not yet indexed' };
+export async function generateQuestionBank({ textbookId, subject, chapterId, count, difficulty, questionTypes, userId }) {
+  let chunks = [];
+  if (textbookId) {
+    const filter = {};
+    if (chapterId) filter.chapter_name = null;
+    chunks = await getTextbookChunks(textbookId, filter) || [];
   }
 
-  const topChunks = chunks.slice(0, 20);
+  if ((!chunks || chunks.length === 0) && !subject) {
+    return { questions: [], message: 'Select a subject or upload a textbook' };
+  }
+
+  let topChunks = chunks;
+  if (chunks.length > 0) {
+    topChunks = chunks.slice(0, 20);
+  }
 
   if (chapterId) {
     const { data: chapter } = await supabase.from('chapters').select('*').eq('id', chapterId).single();
@@ -160,7 +187,7 @@ export async function generateQuestionBank({ textbookId, chapterId, count, diffi
     }
   }
 
-  const questions = await generateQuestions(topChunks, count || 10, difficulty || 'medium', questionTypes);
+  const questions = await generateQuestions(topChunks, count || 10, difficulty || 'medium', questionTypes, subject || null);
 
   if (questions) {
     for (const q of questions) {

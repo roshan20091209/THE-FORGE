@@ -7,9 +7,9 @@ const router = Router();
 
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { question, textbook_id, chapter_id, marks, mode, language } = req.body;
-    if (!question || !textbook_id) {
-      return res.status(400).json({ error: 'Question and textbook_id required' });
+    const { question, textbook_id, subject, chapter_id, marks, mode, language } = req.body;
+    if (!question || (!textbook_id && !subject)) {
+      return res.status(400).json({ error: 'Question and either textbook_id or subject required' });
     }
 
     const limitCheck = await checkDailyQuestionLimit(req.user.id);
@@ -22,7 +22,8 @@ router.post('/', authenticateToken, async (req, res) => {
 
     const result = await askQuestion({
       question,
-      textbookId: textbook_id,
+      textbookId: textbook_id || null,
+      subject: subject || null,
       chapterId: chapter_id || null,
       marks: marks || null,
       mode: mode || 'direct',
@@ -39,9 +40,9 @@ router.post('/', authenticateToken, async (req, res) => {
 
 router.post('/explain', authenticateToken, async (req, res) => {
   try {
-    const { question, textbook_id, chapter_id, language } = req.body;
-    if (!question || !textbook_id) {
-      return res.status(400).json({ error: 'Question and textbook_id required' });
+    const { question, textbook_id, subject, chapter_id, language } = req.body;
+    if (!question || (!textbook_id && !subject)) {
+      return res.status(400).json({ error: 'Question and either textbook_id or subject required' });
     }
 
     const limitCheck = await checkDailyQuestionLimit(req.user.id);
@@ -54,7 +55,8 @@ router.post('/explain', authenticateToken, async (req, res) => {
 
     const result = await askQuestion({
       question,
-      textbookId: textbook_id,
+      textbookId: textbook_id || null,
+      subject: subject || null,
       chapterId: chapter_id || null,
       marks: null,
       mode: 'explain',
@@ -70,9 +72,9 @@ router.post('/explain', authenticateToken, async (req, res) => {
 
 router.post('/assignment', authenticateToken, async (req, res) => {
   try {
-    const { questions, textbook_id, marks_per_question, language } = req.body;
-    if (!questions || !Array.isArray(questions) || questions.length === 0 || !textbook_id) {
-      return res.status(400).json({ error: 'Questions array and textbook_id required' });
+    const { questions, textbook_id, subject, marks_per_question, language } = req.body;
+    if (!questions || !Array.isArray(questions) || questions.length === 0 || (!textbook_id && !subject)) {
+      return res.status(400).json({ error: 'Questions array and either textbook_id or subject required' });
     }
 
     if (questions.length > 50) {
@@ -81,7 +83,8 @@ router.post('/assignment', authenticateToken, async (req, res) => {
 
     const result = await solveAssignment({
       questions,
-      textbookId: textbook_id,
+      textbookId: textbook_id || null,
+      subject: subject || null,
       marksPerQuestion: marks_per_question || 2,
       language: language || 'english',
       userId: req.user.id
@@ -95,13 +98,14 @@ router.post('/assignment', authenticateToken, async (req, res) => {
 
 router.post('/generate-questions', authenticateToken, async (req, res) => {
   try {
-    const { textbook_id, chapter_id, count, difficulty, question_types } = req.body;
-    if (!textbook_id) {
-      return res.status(400).json({ error: 'textbook_id required' });
+    const { textbook_id, subject, chapter_id, count, difficulty, question_types } = req.body;
+    if (!textbook_id && !subject) {
+      return res.status(400).json({ error: 'textbook_id or subject required' });
     }
 
     const result = await generateQuestionBank({
-      textbookId: textbook_id,
+      textbookId: textbook_id || null,
+      subject: subject || null,
       chapterId: chapter_id || null,
       count: count || 10,
       difficulty: difficulty || 'medium',
