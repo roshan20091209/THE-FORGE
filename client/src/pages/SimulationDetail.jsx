@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { Clock, Brain, Zap, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../api'
+import Button from '../components/ui/Button'
+import Badge from '../components/ui/Badge'
+import Skeleton from '../components/ui/Skeleton'
 
 const difficultyInfo = {
-  beginner: { label: 'Easy', color: 'bg-green-600', time: '~15 min' },
-  intermediate: { label: 'Medium', color: 'bg-yellow-600', time: '~30 min' },
-  advanced: { label: 'Hard', color: 'bg-red-600', time: '~1 hour' },
+  beginner: { label: 'Easy', variant: 'beginner', time: '~15 min' },
+  intermediate: { label: 'Medium', variant: 'intermediate', time: '~30 min' },
+  advanced: { label: 'Hard', variant: 'advanced', time: '~1 hour' },
 }
 
 export default function SimulationDetail() {
@@ -36,32 +41,66 @@ export default function SimulationDetail() {
     }
   }
 
-  if (loading) return <div className="text-center py-20">Loading...</div>
-  if (!sim) return <div className="text-center py-20">Challenge not found</div>
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-6 pb-24 space-y-4">
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-10 w-72" />
+        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    )
+  }
 
-  const diff = difficultyInfo[sim.difficulty] || { label: sim.difficulty, color: 'bg-gray-600', time: '' }
+  if (!sim) return (
+    <div className="text-center py-20">
+      <p className="text-forge-text-secondary mb-4">Challenge not found</p>
+      <Link to="/simulations" className="text-forge-accent hover:underline">Browse challenges →</Link>
+    </div>
+  )
+
+  const diff = difficultyInfo[sim.difficulty] || { label: sim.difficulty, variant: 'info', time: '' }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-8">
-        <div className="flex items-center gap-3 mb-6 flex-wrap">
-          <span className={`text-xs px-2.5 py-1 rounded-full text-white ${diff.color}`}>{diff.label}</span>
-          <span className="text-xs text-gray-500">{sim.industry}</span>
-          <span className="text-xs text-gray-500">{diff.time}</span>
-          <span className="text-xs text-green-500">Unlimited retries</span>
+    <div className="max-w-4xl mx-auto px-4 py-6 pb-24">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <button onClick={() => navigate('/simulations')} className="btn-ghost text-sm mb-4 flex items-center gap-1">
+          <ArrowLeft className="w-4 h-4" /> Back to Challenges
+        </button>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="card !p-6 md:!p-8"
+      >
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          <Badge variant={diff.variant}>{diff.label}</Badge>
+          <span className="text-xs text-forge-text-muted">{sim.industry}</span>
+          <span className="text-xs text-forge-text-muted flex items-center gap-1">
+            <Clock className="w-3 h-3" /> {diff.time}
+          </span>
+          <Badge variant="success">Unlimited retries</Badge>
         </div>
 
-        <h1 className="text-3xl font-bold mb-4">{sim.title}</h1>
-        <p className="text-gray-300 mb-8 whitespace-pre-wrap">{sim.description}</p>
+        <h1 className="text-2xl md:text-3xl font-display font-bold mb-4">{sim.title}</h1>
+        <p className="text-forge-text-secondary mb-6 whitespace-pre-wrap">{sim.description}</p>
 
-        <div className="bg-gray-950 rounded-lg p-6 mb-6 border border-gray-800">
-          <h2 className="text-lg font-semibold mb-3">Problem Brief</h2>
-          <p className="text-gray-400 whitespace-pre-wrap text-sm">{sim.problem_brief}</p>
+        <div className="bg-white/[0.03] rounded-xl p-5 mb-4 border border-white/[0.06]">
+          <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
+            <Brain className="w-4 h-4 text-forge-accent" />
+            Problem Brief
+          </h2>
+          <p className="text-forge-text-secondary whitespace-pre-wrap text-sm leading-relaxed">{sim.problem_brief}</p>
         </div>
 
-        <div className="bg-gray-950 rounded-lg p-6 mb-8 border border-gray-800">
-          <h2 className="text-lg font-semibold mb-3">Why This Matters</h2>
-          <p className="text-gray-400 text-sm">
+        <div className="bg-white/[0.03] rounded-xl p-5 mb-6 border border-white/[0.06]">
+          <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
+            <Zap className="w-4 h-4 text-forge-warning" />
+            Why This Matters
+          </h2>
+          <p className="text-forge-text-secondary text-sm">
             {sim.industry === 'Technology' ? 'Tech companies care about how you debug and communicate under pressure. This challenge tests your ability to find root causes and explain them clearly — exactly what interns do in their first week.' :
              sim.industry === 'Data Engineering' ? 'Companies need people who can design systems. This challenge tests your architectural thinking, which is what separates great engineers from average ones.' :
              sim.industry === 'Healthcare' ? 'Healthcare systems save lives. This challenge tests your ability to design under constraints while keeping user safety first.' :
@@ -70,14 +109,17 @@ export default function SimulationDetail() {
           </p>
         </div>
 
-        <button
+        <Button
           onClick={handleStart}
+          variant="primary"
+          className="w-full"
+          size="lg"
+          loading={starting}
           disabled={starting}
-          className="w-full bg-forge-600 hover:bg-forge-500 disabled:bg-gray-700 px-6 py-3 rounded-lg text-lg font-semibold transition"
         >
-          {starting ? 'Starting...' : user ? 'Start This Challenge' : 'Login to Start'}
-        </button>
-      </div>
+          {user ? 'Start This Challenge' : 'Login to Start'}
+        </Button>
+      </motion.div>
     </div>
   )
 }

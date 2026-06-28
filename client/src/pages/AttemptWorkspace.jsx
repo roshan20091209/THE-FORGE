@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { Brain, Send, Clock, ArrowLeft, Sparkles } from 'lucide-react'
 import { api } from '../api'
+import Button from '../components/ui/Button'
+import Badge from '../components/ui/Badge'
 
 export default function AttemptWorkspace() {
   const { id } = useParams()
@@ -13,6 +17,7 @@ export default function AttemptWorkspace() {
   const [loading, setLoading] = useState(true)
   const [timeLeft, setTimeLeft] = useState('')
   const [cooldown, setCooldown] = useState(0)
+  const [showTutor, setShowTutor] = useState(false)
   const chatEnd = useRef(null)
   const timerRef = useRef(null)
 
@@ -89,127 +94,190 @@ export default function AttemptWorkspace() {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-      <div className="animate-pulse text-center">
-        <div className="text-4xl mb-4">🧠</div>
-        <div className="text-forge-400 text-lg">Loading your challenge...</div>
+    <div className="min-h-screen bg-forge-bg flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-4xl mb-4 animate-float">🧠</div>
+        <p className="text-forge-accent">Loading your challenge...</p>
       </div>
     </div>
   )
 
-  if (!attempt) return <div className="text-center py-20">Challenge not found</div>
+  if (!attempt) return (
+    <div className="text-center py-20">
+      <p className="text-forge-text-secondary mb-4">Challenge not found</p>
+      <Link to="/dashboard" className="text-forge-accent hover:underline">Back to Dashboard</Link>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col">
-      <header className="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/dashboard')} className="text-gray-400 hover:text-white text-sm">← Back</button>
-          <div className="h-4 w-px bg-gray-700" />
-          <div>
-            <h2 className="font-semibold text-sm">{sim?.title || 'Challenge'}</h2>
-            <span className="text-[10px] text-gray-500">{sim?.industry || ''} · {sim?.difficulty || ''}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="text-right hidden sm:block">
-            <div className={`font-mono text-lg font-bold tracking-wider ${parseInt(timeLeft.split(':')[0] || '0') < 2 ? 'text-red-400' : 'text-forge-400'}`}>
-              {timeLeft || '--:--:--'}
-            </div>
-            <div className="text-[10px] text-gray-600 uppercase tracking-wider">Time Left</div>
-          </div>
-          {attempt.status === 'in_progress' && (
-            <button onClick={() => navigate(`/attempts/${id}/submit`)} className="bg-green-700 hover:bg-green-600 px-4 py-2 rounded text-sm font-medium transition">
-              Submit Solution
+    <div className="min-h-screen bg-forge-bg flex flex-col">
+      {/* Header */}
+      <header className="glass border-b border-white/[0.06] px-4 py-3">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate('/dashboard')} className="btn-ghost text-xs flex items-center gap-1">
+              <ArrowLeft className="w-4 h-4" /> Back
             </button>
-          )}
-        </div>
-      </header>
-
-      <div className="bg-gray-900 border-b border-gray-800 px-6 py-3">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-forge-400 font-medium">AI Tutor</span>
-          <span className="text-gray-600">·</span>
-          <span className="text-gray-500">Ask me anything. I'll help you think through it.</span>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-6 max-w-4xl mx-auto w-full space-y-4">
-        {messages.length === 0 && (
-          <div className="text-center text-gray-500 mt-20">
-            <p className="text-lg mb-2">🧠 Stuck? Talk to your AI tutor.</p>
-            <p className="text-sm">Ask questions, share your ideas, or just think out loud. I'm here to help.</p>
-          </div>
-        )}
-        {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[75%] rounded-xl px-4 py-2 ${
-              msg.role === 'user'
-                ? 'bg-forge-700 text-white'
-                : msg.role === 'tutor'
-                  ? 'bg-gray-800 text-gray-200 border border-gray-700'
-                  : 'bg-red-900/50 text-red-200 border border-red-700'
-            }`}>
-              {msg.role !== 'user' && (
-                <div className="flex items-center gap-2 mb-1">
-                  {msg.role === 'tutor' ? (
-                    <span className="text-xs text-forge-400 font-medium">🧠 Tutor</span>
-                  ) : (
-                    <span className="text-xs text-gray-500">System</span>
-                  )}
-                  <span className="text-[10px] text-gray-600">
-                    {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                  </span>
-                </div>
-              )}
-              {msg.role === 'user' && (
-                <div className="text-xs text-gray-300 mb-1">
-                  You · {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                </div>
-              )}
-              <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.message}</p>
-            </div>
-          </div>
-        ))}
-        {sending && (
-          <div className="flex justify-start">
-            <div className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3">
+            <div className="h-4 w-px bg-white/[0.06]" />
+            <div className="min-w-0">
+              <h2 className="font-semibold text-sm truncate max-w-[200px]">{sim?.title || 'Challenge'}</h2>
               <div className="flex items-center gap-2">
-                <span className="text-forge-400 text-sm">🧠 Tutor</span>
-                <span className="text-gray-500 text-sm animate-pulse">thinking</span>
-                <span className="flex gap-0.5">
-                  <span className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                </span>
+                <span className="text-[10px] text-forge-text-muted">{sim?.industry || ''}</span>
+                {sim?.difficulty && <Badge variant={sim.difficulty}>{sim.difficulty}</Badge>}
               </div>
             </div>
           </div>
-        )}
-        <div ref={chatEnd} />
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <div className={`font-mono text-base font-bold tracking-wider ${
+                parseInt(timeLeft.split(':')[0] || '0') < 2 ? 'text-forge-danger' : 'text-forge-accent'
+              }`}>
+                {timeLeft || '--:--:--'}
+              </div>
+              <div className="text-[10px] text-forge-text-muted uppercase tracking-wider">Time Left</div>
+            </div>
+            {attempt.status === 'in_progress' && (
+              <Button
+                variant="success"
+                size="sm"
+                onClick={() => navigate(`/attempts/${id}/submit`)}
+              >
+                Submit
+              </Button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Problem Brief */}
+      {sim && (
+        <div className="border-b border-white/[0.06] bg-white/[0.02]">
+          <div className="max-w-4xl mx-auto px-4 py-3">
+            <p className="text-sm text-forge-text-secondary line-clamp-2">{sim.problem_brief}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Chat Area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+          {messages.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-12"
+            >
+              <Brain className="w-12 h-12 text-forge-accent mx-auto mb-4" />
+              <p className="text-lg font-medium mb-2">🧠 Stuck? Talk to your AI tutor.</p>
+              <p className="text-sm text-forge-text-secondary">
+                Ask questions, share your ideas, or just think out loud. I'm here to help.
+              </p>
+            </motion.div>
+          )}
+          {messages.map((msg, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 ${
+                msg.role === 'user'
+                  ? 'bg-forge-accent text-white rounded-br-sm'
+                  : msg.role === 'tutor'
+                    ? 'bg-forge-surface-hover text-forge-text border border-white/[0.06] rounded-bl-sm'
+                    : 'bg-forge-danger/10 text-forge-danger border border-forge-danger/20'
+              }`}>
+                {msg.role !== 'user' && (
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    {msg.role === 'tutor' ? (
+                      <span className="text-[10px] text-forge-accent font-medium flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" /> Tutor
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-forge-text-muted">System</span>
+                    )}
+                    <span className="text-[10px] text-forge-text-muted">
+                      {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                    </span>
+                  </div>
+                )}
+                {msg.role === 'user' && (
+                  <div className="text-[10px] text-white/60 mb-1">
+                    You · {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                  </div>
+                )}
+                <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.message}</p>
+              </div>
+            </motion.div>
+          ))}
+          {sending && (
+            <div className="flex justify-start">
+              <div className="bg-forge-surface-hover border border-white/[0.06] rounded-2xl rounded-bl-sm px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-forge-accent text-sm">🧠 Tutor</span>
+                  <span className="text-forge-text-muted text-sm animate-pulse">thinking</span>
+                  <span className="flex gap-0.5">
+                    <span className="w-1.5 h-1.5 bg-forge-text-muted rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 bg-forge-text-muted rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 bg-forge-text-muted rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={chatEnd} />
+        </div>
       </div>
 
+      {/* Input Area */}
       {attempt.status === 'in_progress' && (
-        <div className="border-t border-gray-800 p-4 bg-gray-900">
+        <div className="border-t border-white/[0.06] p-4 glass">
           <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-2 mb-2">
-              {cooldown > 0 && (
-                <span className="text-xs text-amber-400">Wait {cooldown}s before asking again</span>
-              )}
-            </div>
-            <div className="flex gap-3">
-              <textarea
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask your tutor for hints, guidance, or just talk through your approach..."
-                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-forge-500 resize-none placeholder-gray-500 text-sm"
-                rows={2}
-                disabled={cooldown > 0}
-              />
-              <button onClick={sendMessage} disabled={sending || !input.trim() || cooldown > 0} className="bg-forge-600 hover:bg-forge-500 disabled:bg-gray-700 disabled:text-gray-500 px-6 py-2 rounded-lg transition self-end text-white font-medium text-sm">
-                {cooldown > 0 ? `${cooldown}s` : 'Send'}
+            {cooldown > 0 && (
+              <p className="text-xs text-forge-warning mb-2">Wait {cooldown}s before asking again</p>
+            )}
+            <div className="flex gap-3 items-end">
+              <div className="flex-1 relative">
+                <textarea
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask your tutor for hints, guidance, or just talk through your approach..."
+                  className="input-field resize-none pr-10"
+                  rows={2}
+                  disabled={cooldown > 0}
+                />
+              </div>
+              <button
+                onClick={sendMessage}
+                disabled={sending || !input.trim() || cooldown > 0}
+                className="w-10 h-10 rounded-full bg-forge-accent hover:bg-forge-accent/80 disabled:bg-white/[0.06] disabled:text-forge-text-muted flex items-center justify-center transition flex-shrink-0"
+              >
+                {cooldown > 0 ? (
+                  <span className="text-xs font-mono">{cooldown}</span>
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Show message when completed */}
+      {attempt.status !== 'in_progress' && (
+        <div className="border-t border-white/[0.06] p-4 text-center">
+          <p className="text-sm text-forge-text-secondary mb-2">
+            {attempt.status === 'submitted' ? 'Solution submitted! Awaiting evaluation...' : 'Challenge completed!'}
+          </p>
+          <div className="flex gap-2 justify-center">
+            <Link to={`/attempts/${id}/evaluation`} className="btn-primary text-xs !px-4 !py-1.5">
+              View Evaluation
+            </Link>
+            <Link to="/dashboard" className="btn-ghost text-xs">
+              Dashboard
+            </Link>
           </div>
         </div>
       )}

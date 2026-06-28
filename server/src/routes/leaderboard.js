@@ -42,4 +42,24 @@ router.get('/schools', async (req, res) => {
   }
 });
 
+router.get('/activity', authenticateToken, async (req, res) => {
+  try {
+    const atts = await select('simulation_attempts', '*, simulations!left(title)', {
+      where: { status: 'in_progress' },
+      order: { by: 'started_at', direction: 'desc' },
+      limit: 20
+    });
+    const activities = atts.map(a => ({
+      id: a.id,
+      user_name: a.user_id,
+      simulation_title: a.simulations?.title || 'a challenge',
+      type: 'challenge_started',
+      created_at: a.started_at
+    }));
+    res.json({ activities });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

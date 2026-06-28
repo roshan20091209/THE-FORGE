@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { Zap, Brain, BarChart3, Target } from 'lucide-react'
 import { api } from '../api'
-
-const difficultyColors = {
-  beginner: 'bg-green-900/50 text-green-300 border-green-700',
-  intermediate: 'bg-yellow-900/50 text-yellow-300 border-yellow-700',
-  advanced: 'bg-red-900/50 text-red-300 border-red-700',
-}
+import Card from '../components/ui/Card'
+import Badge from '../components/ui/Badge'
+import Skeleton from '../components/ui/Skeleton'
 
 const difficultyLabels = {
-  beginner: 'Easy - 15 min',
-  intermediate: 'Medium - 30 min',
-  advanced: 'Hard - 1 hour',
+  beginner: 'Easy',
+  intermediate: 'Medium',
+  advanced: 'Hard',
 }
 
 export default function Simulations() {
@@ -28,70 +27,114 @@ export default function Simulations() {
 
   const filtered = filter === 'all' ? simulations : simulations.filter(s => s.difficulty === filter)
 
-  if (loading) return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-800 rounded w-48" />
-        <div className="grid md:grid-cols-2 gap-6 mt-8">
-          {[1,2,3,4].map(i => <div key={i} className="h-32 bg-gray-800 rounded-xl" />)}
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-6 pb-24 space-y-4">
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-8 w-72" />
+        <div className="grid md:grid-cols-2 gap-4 mt-4">
+          {[1,2,3,4].map(i => <Skeleton key={i} className="h-40 w-full" />)}
         </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-2">Challenge Catalog</h1>
-      <p className="text-gray-400 mb-6">Real company problems. Pick your level and start proving yourself.</p>
+    <div className="max-w-5xl mx-auto px-4 py-6 pb-24">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-display font-bold">Challenge Catalog</h1>
+          <Target className="w-6 h-6 text-forge-accent" />
+        </div>
+        <p className="text-forge-text-secondary text-sm mb-6">
+          Real company problems. Pick your level and start proving yourself.
+        </p>
+      </motion.div>
 
-      <div className="flex gap-2 mb-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="flex gap-2 mb-6"
+      >
         {['all', 'beginner', 'intermediate', 'advanced'].map(d => (
           <button
             key={d}
             onClick={() => setFilter(d)}
-            className={`px-4 py-1.5 rounded-lg text-sm transition ${
+            className={`px-4 py-1.5 rounded-pill text-sm font-medium transition ${
               filter === d
-                ? 'bg-forge-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                ? 'bg-forge-accent text-white'
+                : 'bg-white/[0.04] text-forge-text-secondary hover:bg-white/[0.08] hover:text-forge-text'
             }`}
           >
             {d === 'all' ? 'All Levels' : d.charAt(0).toUpperCase() + d.slice(1)}
           </button>
         ))}
-      </div>
+      </motion.div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
-          <p>No challenges found at this level.</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-20"
+        >
+          <Brain className="w-12 h-12 text-forge-text-muted mx-auto mb-4" />
+          <p className="text-forge-text-secondary">No challenges found at this level.</p>
+          <button onClick={() => setFilter('all')} className="btn-ghost text-sm mt-2">
+            Show all levels
+          </button>
+        </motion.div>
       ) : (
-        <div className="grid md:grid-cols-2 gap-6">
-          {filtered.map(sim => (
-            <Link key={sim.id} to={`/simulations/${sim.id}`} className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-600 transition group">
-              <div className="flex items-start justify-between mb-3">
-                <h2 className="text-xl font-semibold group-hover:text-forge-400 transition">{sim.title}</h2>
-                <span className={`text-xs px-2 py-0.5 rounded border ${difficultyColors[sim.difficulty] || 'bg-gray-800 text-gray-300'}`}>
-                  {difficultyLabels[sim.difficulty] || sim.difficulty}
-                </span>
-              </div>
-              <p className="text-gray-400 text-sm mb-4 line-clamp-2">{sim.description}</p>
-              <div className="flex items-center gap-4 text-xs text-gray-500">
-                <span>{sim.industry}</span>
-                <span>Unlimited retries</span>
-                <span>AI tutor available</span>
-              </div>
-            </Link>
+        <div className="grid md:grid-cols-2 gap-4">
+          {filtered.map((sim, i) => (
+            <motion.div
+              key={sim.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+            >
+              <Link to={`/simulations/${sim.id}`}>
+                <Card className="h-full group">
+                  <div className="flex items-start justify-between mb-3">
+                    <h2 className="text-lg font-semibold group-hover:text-forge-accent transition-colors">{sim.title}</h2>
+                    <Badge variant={sim.difficulty}>
+                      {difficultyLabels[sim.difficulty] || sim.difficulty}
+                    </Badge>
+                  </div>
+                  <p className="text-forge-text-secondary text-sm mb-4 line-clamp-2">{sim.description}</p>
+                  <div className="flex items-center gap-4 text-xs text-forge-text-muted">
+                    <span className="flex items-center gap-1">
+                      <BarChart3 className="w-3 h-3" />
+                      {sim.industry}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-3 h-3" />
+                      Unlimited retries
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Brain className="w-3 h-3" />
+                      AI tutor
+                    </span>
+                  </div>
+                </Card>
+              </Link>
+            </motion.div>
           ))}
         </div>
       )}
 
-      <div className="mt-12 bg-gray-900 border border-gray-800 rounded-xl p-6 text-center">
-        <p className="text-gray-400 text-sm mb-2">Why 3 levels?</p>
-        <p className="text-gray-500 text-xs">
-          Start at Easy to build confidence. Medium challenges you. Hard proves you are ready for real internships. 
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mt-8 card !p-6 text-center"
+      >
+        <p className="text-forge-text-secondary text-sm mb-2 font-medium">Why 3 levels?</p>
+        <p className="text-forge-text-muted text-xs">
+          Start at Easy to build confidence. Medium challenges you. Hard proves you're ready for real internships.
           You can retry any challenge unlimited times — growth matters more than perfection.
         </p>
-      </div>
+      </motion.div>
     </div>
   )
 }

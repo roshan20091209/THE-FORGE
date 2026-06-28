@@ -2,92 +2,171 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  body {
+    @apply bg-forge-bg text-forge-text font-body;
+    margin: 0;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+
+  code, pre {
+    @apply font-mono;
   }
 }
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
+@layer components {
+  .glass {
+    @apply bg-forge-surface/80 backdrop-blur-lg border border-white/[0.06];
+  }
+
+  .glass-strong {
+    @apply bg-forge-surface/95 backdrop-blur-xl border border-white/[0.08];
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-forge-accent via-indigo-400 to-forge-cyan;
+  }
+
+  .gradient-border {
+    @apply border border-transparent bg-gradient-to-b from-forge-accent/30 to-transparent bg-origin-border;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-forge-accent to-indigo-500 hover:from-indigo-500 hover:to-forge-accent
+           text-white font-semibold rounded-pill px-6 py-2.5 transition-all duration-200
+           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
+           shadow-lg shadow-forge-accent/20 hover:shadow-xl hover:shadow-forge-accent/30;
+  }
+
+  .btn-secondary {
+    @apply bg-forge-surface-hover hover:bg-white/10 text-forge-text font-medium
+           rounded-pill px-6 py-2.5 transition-all duration-200 border border-white/[0.06]
+           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-white/5 text-forge-text-secondary font-medium
+           rounded-pill px-4 py-2 transition-all duration-200
+           active:scale-[0.98];
+  }
+
+  .card {
+    @apply bg-forge-surface border border-white/[0.06] rounded-card shadow-card;
+  }
+
+  .card-hover {
+    @apply card hover:border-white/[0.12] hover:shadow-elevated transition-all duration-200;
+  }
+
+  .input-field {
+    @apply w-full bg-forge-surface border border-white/[0.08] rounded-input px-4 py-2.5
+           text-forge-text placeholder-forge-text-muted
+           focus:outline-none focus:border-forge-accent focus:ring-1 focus:ring-forge-accent/30
+           transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-pill text-xs font-medium;
+  }
+
+  .badge-success { @apply badge bg-forge-success/10 text-forge-success border border-forge-success/20; }
+  .badge-warning { @apply badge bg-forge-warning/10 text-forge-warning border border-forge-warning/20; }
+  .badge-danger { @apply badge bg-forge-danger/10 text-forge-danger border border-forge-danger/20; }
+  .badge-info { @apply badge bg-forge-accent/10 text-forge-accent border border-forge-accent/20; }
+  .badge-cyan { @apply badge bg-forge-cyan/10 text-forge-cyan border border-forge-cyan/20; }
 }
 
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .bg-gradient-radial {
+    background-image: radial-gradient(circle at center, var(--tw-gradient-from), var(--tw-gradient-to));
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+}
+
+/* Animations missing from Tailwind config */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-@keyframes flipCard {
-  0% { transform: rotateY(0deg); }
-  50% { transform: rotateY(90deg); }
-  100% { transform: rotateY(0deg); }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-
-@keyframes pulseBorder {
-  0%, 100% { border-color: rgba(239, 68, 68, 0.3); }
-  50% { border-color: rgba(239, 68, 68, 0.8); }
-}
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-.animate-slideIn {
-  animation: slideIn 0.3s ease-out;
+/* Speech bubble tail for chat */
+.chat-tail::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 10px;
+  height: 10px;
 }
-
-.animate-slideDown {
-  animation: slideDown 0.3s ease-out;
+.chat-tail-user::after {
+  right: -5px;
+  background: #6366F1;
+  clip-path: polygon(0 0, 0% 100%, 100% 0);
 }
-
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
-}
-
-.animate-pulseBorder {
-  animation: pulseBorder 1s ease-in-out infinite;
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.bg-gray-850 {
-  background-color: #1a1a2e;
-}
-
-.hover\:bg-gray-850\/50:hover {
-  background-color: rgba(26, 26, 46, 0.5);
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #374151;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+.chat-tail-tutor::after {
+  left: -5px;
+  background: #1E1E28;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
 }

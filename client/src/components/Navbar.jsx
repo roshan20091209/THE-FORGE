@@ -1,12 +1,14 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { Flame, LogOut } from 'lucide-react'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
-  if (location.pathname.startsWith('/attempts/')) return null
+  const hidePaths = ['/login', '/register', '/auth/', '/attempts/', '/c/', '/leaderboard', '/community', '/profile', '/dashboard']
+  if (hidePaths.some(p => location.pathname.startsWith(p))) return null
 
   const handleLogout = () => {
     logout()
@@ -14,27 +16,33 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-gray-900 border-b border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
-          <Link to="/" className="text-xl font-bold text-forge-400 flex items-center gap-2">
-            ⚒️ The Forge
+    <nav className="glass border-b border-white/[0.06]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex justify-between h-14 items-center">
+          <Link to="/" className="text-lg font-display font-bold gradient-text">
+            The Forge
           </Link>
-          <div className="flex items-center gap-4">
-            <Link to="/simulations" className="text-gray-300 hover:text-white transition text-sm">Challenges</Link>
+          <div className="flex items-center gap-3">
+            <Link to="/simulations" className="btn-ghost text-xs">Challenges</Link>
             {user ? (
               <>
-                <Link to="/dashboard" className="text-gray-300 hover:text-white transition text-sm">Dashboard</Link>
-                <span className="text-gray-500 text-sm hidden sm:inline">{user.full_name || user.email?.split('@')[0]}</span>
+                <Link to="/dashboard" className="btn-ghost text-xs hidden sm:flex">Dashboard</Link>
+                <span className="text-xs text-forge-text-muted hidden sm:inline">
+                  {user.full_name || user.email?.split('@')[0]}
+                </span>
                 {user.streak > 0 && (
-                  <span className="text-orange-400 text-xs">🔥 {user.streak}</span>
+                  <span className="badge-warning text-[10px]">
+                    <Flame className="w-3 h-3" /> {user.streak}
+                  </span>
                 )}
-                <button onClick={handleLogout} className="bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded text-sm transition">Logout</button>
+                <button onClick={handleLogout} className="btn-ghost text-xs" title="Logout">
+                  <LogOut className="w-4 h-4" />
+                </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="text-gray-300 hover:text-white transition text-sm">Login</Link>
-                <Link to="/register" className="bg-forge-600 hover:bg-forge-500 px-3 py-1.5 rounded text-sm transition">Join Free</Link>
+                <Link to="/login" className="btn-ghost text-xs">Login</Link>
+                <Link to="/register" className="btn-primary text-xs !px-4 !py-1.5">Join Free</Link>
               </>
             )}
           </div>

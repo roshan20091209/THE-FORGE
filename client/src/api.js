@@ -40,5 +40,6 @@ export const api = {
   leaderboard: {
     get: (params) => request(`/leaderboard?${new URLSearchParams(params || {})}`),
     schools: () => request('/leaderboard/schools'),
+    activity: () => request('/leaderboard/activity'),
   },
 };

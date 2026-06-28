@@ -2,15 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/forge.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="description" content="The Forge helps 12th graders build proof for internships. Solve real company problems, get evaluated like a real employee, and share your capability profile." />
     <meta property="og:title" content="The Forge - Prove Your Worth" />
     <meta property="og:description" content="Stop applying. Start proving. Solve real company problems and build a capability profile that companies can't ignore." />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
     <title>The Forge — Prove Your Worth</title>
+    <script>
+      // Check for system dark mode preference
+      if (localStorage.getItem('theme') === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
   </head>
-  <body class="bg-gray-950 text-gray-100">
+  <body class="bg-forge-bg text-forge-text font-body antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

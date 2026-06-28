@@ -24,6 +24,16 @@ export default function AuthCallback() {
     })
   }, [navigate])
 
-  if (error) return <div className="text-center py-20 text-red-400">{error}</div>
-  return <div className="text-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-forge-400 mx-auto"></div><p className="mt-4 text-gray-400">Completing sign in...</p></div>
+  if (error) return (
+    <div className="text-center py-20">
+      <p className="text-forge-danger">{error}</p>
+    </div>
+  )
+
+  return (
+    <div className="text-center py-20">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-forge-accent mx-auto"></div>
+      <p className="mt-4 text-forge-text-secondary text-sm">Completing sign in...</p>
+    </div>
+  )
 }
