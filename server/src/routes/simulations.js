@@ -19,7 +19,7 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', authenticateToken, async (req, res) => {
-  if (!['admin', 'employer'].includes(req.user.role)) return res.status(403).json({ error: 'Not authorized' });
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Not authorized' });
   const { title, description, industry, difficulty, duration_hours, problem_brief, success_criteria, crisis_scenarios } = req.body;
   if (!title || !problem_brief) return res.status(400).json({ error: 'Title and problem brief required' });
   const data = await insert('simulations', {
