@@ -78,7 +78,7 @@ export default function PublicCredential() {
             <div className="grid grid-cols-2 gap-3 mt-8 max-w-md mx-auto">
               {[
                 { label: 'Wrong & Recovered', score: scores.wrong_and_recovered, color: 'border-red-500/30' },
-                { label: 'Pressure Comm', score: scores.pressure_communication, color: 'border-blue-500/30' },
+                { label: 'Pressure Comm.', score: scores.pressure_communication, color: 'border-blue-500/30' },
                 { label: 'Mid-Process Pivot', score: scores.mid_process_pivot, color: 'border-purple-500/30' },
                 { label: 'Unblocking Agency', score: scores.unblocking_agency, color: 'border-green-500/30' },
               ].map((d, i) => {

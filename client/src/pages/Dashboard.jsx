@@ -48,7 +48,7 @@ export default function Dashboard() {
 
   const yourRank = leaderboard.findIndex(p => p.name === (user?.full_name || user?.email))
   const topPct = leaderboard.length > 0 && yourRank >= 0
-    ? Math.round(((leaderboard.length - yourRank) / leaderboard.length) * 100)
+    ? Math.max(1, Math.round(((leaderboard.length - yourRank) / leaderboard.length) * 100))
     : null
 
   const todayChallenge = activeAttempts[0]
@@ -263,7 +263,7 @@ export default function Dashboard() {
       </div>
 
       {/* Community Pulse */}
-      {activeAttempts.length > 0 && (
+      {schoolBoard.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -272,17 +272,16 @@ export default function Dashboard() {
           <Card>
             <h3 className="font-semibold flex items-center gap-2 mb-3">
               <Users className="w-4 h-4 text-forge-success" />
-              Community Pulse
+              Your School
             </h3>
             <div className="space-y-2">
-              {activeAttempts.slice(0, 3).map((a, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm text-forge-text-secondary">
-                  <span className="w-1.5 h-1.5 rounded-full bg-forge-success animate-pulse" />
-                  <span className="text-forge-text-muted text-xs">
-                    Someone from your school just started a challenge
-                  </span>
-                </div>
-              ))}
+              <p className="text-xs text-forge-text-muted">
+                {schoolBoard.length} students from your school are on the leaderboard. 
+                {user?.streak > 0 ? ` You're on a ${user.streak}-day streak!` : ' Start a challenge to join them!'}
+              </p>
+              <Link to="/leaderboard" className="text-xs text-forge-accent hover:underline">
+                View full leaderboard →
+              </Link>
             </div>
           </Card>
         </motion.div>

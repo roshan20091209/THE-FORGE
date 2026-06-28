@@ -243,7 +243,7 @@ export default function AttemptWorkspace() {
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask your tutor for hints, guidance, or just talk through your approach..."
+                  placeholder="Ask your tutor for a hint..."
                   className="input-field resize-none pr-10"
                   rows={2}
                   disabled={cooldown > 0}

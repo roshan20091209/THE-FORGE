@@ -13,7 +13,7 @@ export default function RadarChart({ scores, size = 250 }) {
 
     const dims = [
       { key: 'wrong_and_recovered', label: 'Wrong & Recovered' },
-      { key: 'pressure_communication', label: 'Pressure Comm' },
+      { key: 'pressure_communication', label: 'Pressure Communication' },
       { key: 'mid_process_pivot', label: 'Mid-Process Pivot' },
       { key: 'unblocking_agency', label: 'Unblocking Agency' },
     ]

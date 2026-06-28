@@ -100,7 +100,7 @@ export default function Profile() {
               )}
               <p className="text-xs text-forge-text-muted mt-2">
                 <Calendar className="w-3 h-3 inline mr-1" />
-                Member since {new Date().getFullYear()}
+                Member since April 2026
               </p>
               <Button
                 variant="ghost"

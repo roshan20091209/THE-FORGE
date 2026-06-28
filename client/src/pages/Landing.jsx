@@ -91,7 +91,7 @@ export default function Landing() {
         <div className="grid md:grid-cols-4 gap-4">
           {[
             { title: 'Wrong & Recovered', desc: 'Can you admit when you\'re wrong and fix it? Companies love people who pivot fast.', color: 'from-red-500 to-orange-500', icon: '🔄' },
-            { title: 'Pressure Comm', desc: 'When things get tough, do you communicate clearly or panic?', color: 'from-blue-500 to-cyan-500', icon: '💬' },
+            { title: 'Pressure Communication', desc: 'When things get tough, do you communicate clearly or panic?', color: 'from-blue-500 to-cyan-500', icon: '💬' },
             { title: 'Mid-Process Pivot', desc: 'When the problem changes halfway, do you adapt or break down?', color: 'from-purple-500 to-pink-500', icon: '🎯' },
             { title: 'Unblocking Agency', desc: 'Do you figure things out yourself or wait for someone to tell you?', color: 'from-green-500 to-emerald-500', icon: '🚀' },
           ].map((d, i) => (

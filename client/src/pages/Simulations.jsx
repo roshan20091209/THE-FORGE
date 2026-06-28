@@ -131,7 +131,7 @@ export default function Simulations() {
       >
         <p className="text-forge-text-secondary text-sm mb-2 font-medium">Why 3 levels?</p>
         <p className="text-forge-text-muted text-xs">
-          Start at Easy to build confidence. Medium challenges you. Hard proves you're ready for real internships.
+          Easy challenges build confidence. Medium challenges test your skills. Hard challenges prove you're ready for real internships.
           You can retry any challenge unlimited times — growth matters more than perfection.
         </p>
       </motion.div>

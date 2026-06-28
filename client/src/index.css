@@ -152,21 +152,3 @@
   to { opacity: 1; }
 }
 
-/* Speech bubble tail for chat */
-.chat-tail::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  width: 10px;
-  height: 10px;
-}
-.chat-tail-user::after {
-  right: -5px;
-  background: #6366F1;
-  clip-path: polygon(0 0, 0% 100%, 100% 0);
-}
-.chat-tail-tutor::after {
-  left: -5px;
-  background: #1E1E28;
-  clip-path: polygon(100% 0, 0 0, 100% 100%);
-}
