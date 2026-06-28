@@ -1,0 +1,192 @@
+{
+  "subjects": [
+    {
+      "name": "Physics",
+      "code": "042",
+      "total_theory_marks": 70,
+      "total_practical_marks": 30,
+      "exam_duration": 180,
+      "units": [
+        {
+          "unit_number": 1,
+          "unit_name": "Electrostatics",
+          "chapters": [
+            {"name": "Electric Charges and Fields", "marks": 5, "ncert_part": "Part-1", "page_start": 1, "page_end": 48},
+            {"name": "Electrostatic Potential and Capacitance", "marks": 5, "ncert_part": "Part-1", "page_start": 49, "page_end": 96}
+          ]
+        },
+        {
+          "unit_number": 2,
+          "unit_name": "Current Electricity",
+          "chapters": [
+            {"name": "Current Electricity", "marks": 6, "ncert_part": "Part-1", "page_start": 97, "page_end": 138}
+          ]
+        },
+        {
+          "unit_number": 3,
+          "unit_name": "Magnetic Effects of Current and Magnetism",
+          "chapters": [
+            {"name": "Moving Charges and Magnetism", "marks": 5, "ncert_part": "Part-1", "page_start": 139, "page_end": 186},
+            {"name": "Magnetism and Matter", "marks": 3, "ncert_part": "Part-1", "page_start": 187, "page_end": 218}
+          ]
+        },
+        {
+          "unit_number": 4,
+          "unit_name": "Electromagnetic Induction and Alternating Currents",
+          "chapters": [
+            {"name": "Electromagnetic Induction", "marks": 4, "ncert_part": "Part-1", "page_start": 219, "page_end": 252},
+            {"name": "Alternating Current", "marks": 5, "ncert_part": "Part-1", "page_start": 253, "page_end": 286}
+          ]
+        },
+        {
+          "unit_number": 5,
+          "unit_name": "Electromagnetic Waves",
+          "chapters": [
+            {"name": "Electromagnetic Waves", "marks": 4, "ncert_part": "Part-2", "page_start": 287, "page_end": 306}
+          ]
+        },
+        {
+          "unit_number": 6,
+          "unit_name": "Optics",
+          "chapters": [
+            {"name": "Ray Optics and Optical Instruments", "marks": 8, "ncert_part": "Part-2", "page_start": 307, "page_end": 362},
+            {"name": "Wave Optics", "marks": 6, "ncert_part": "Part-2", "page_start": 363, "page_end": 398}
+          ]
+        },
+        {
+          "unit_number": 7,
+          "unit_name": "Dual Nature of Radiation and Matter",
+          "chapters": [
+            {"name": "Dual Nature of Radiation and Matter", "marks": 5, "ncert_part": "Part-2", "page_start": 399, "page_end": 426}
+          ]
+        },
+        {
+          "unit_number": 8,
+          "unit_name": "Atoms and Nuclei",
+          "chapters": [
+            {"name": "Atoms", "marks": 3, "ncert_part": "Part-2", "page_start": 427, "page_end": 456},
+            {"name": "Nuclei", "marks": 4, "ncert_part": "Part-2", "page_start": 457, "page_end": 486}
+          ]
+        },
+        {
+          "unit_number": 9,
+          "unit_name": "Semiconductor Electronics",
+          "chapters": [
+            {"name": "Semiconductor Electronics", "marks": 7, "ncert_part": "Part-2", "page_start": 487, "page_end": 540}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chemistry",
+      "code": "043",
+      "total_theory_marks": 70,
+      "total_practical_marks": 30,
+      "exam_duration": 180,
+      "units": [
+        {
+          "unit_number": 1,
+          "unit_name": "Solutions",
+          "chapters": [{"name": "Solutions", "marks": 7, "ncert_part": "Part-2", "page_start": 1, "page_end": 56}]
+        },
+        {
+          "unit_number": 2,
+          "unit_name": "Electrochemistry",
+          "chapters": [{"name": "Electrochemistry", "marks": 9, "ncert_part": "Part-2", "page_start": 57, "page_end": 112}]
+        },
+        {
+          "unit_number": 3,
+          "unit_name": "Chemical Kinetics",
+          "chapters": [{"name": "Chemical Kinetics", "marks": 7, "ncert_part": "Part-2", "page_start": 113, "page_end": 158}]
+        },
+        {
+          "unit_number": 4,
+          "unit_name": "d and f-Block Elements",
+          "chapters": [{"name": "d and f-Block Elements", "marks": 7, "ncert_part": "Part-1", "page_start": 215, "page_end": 262}]
+        },
+        {
+          "unit_number": 5,
+          "unit_name": "Coordination Compounds",
+          "chapters": [{"name": "Coordination Compounds", "marks": 7, "ncert_part": "Part-1", "page_start": 263, "page_end": 314}]
+        },
+        {
+          "unit_number": 6,
+          "unit_name": "Haloalkanes and Haloarenes",
+          "chapters": [{"name": "Haloalkanes and Haloarenes", "marks": 6, "ncert_part": "Part-2", "page_start": 159, "page_end": 212}]
+        },
+        {
+          "unit_number": 7,
+          "unit_name": "Alcohols, Phenols and Ethers",
+          "chapters": [{"name": "Alcohols, Phenols and Ethers", "marks": 6, "ncert_part": "Part-2", "page_start": 213, "page_end": 264}]
+        },
+        {
+          "unit_number": 8,
+          "unit_name": "Aldehydes, Ketones and Carboxylic Acids",
+          "chapters": [{"name": "Aldehydes, Ketones and Carboxylic Acids", "marks": 8, "ncert_part": "Part-2", "page_start": 265, "page_end": 324}]
+        },
+        {
+          "unit_number": 9,
+          "unit_name": "Amines",
+          "chapters": [{"name": "Amines", "marks": 6, "ncert_part": "Part-2", "page_start": 325, "page_end": 368}]
+        },
+        {
+          "unit_number": 10,
+          "unit_name": "Biomolecules",
+          "chapters": [{"name": "Biomolecules", "marks": 7, "ncert_part": "Part-2", "page_start": 369, "page_end": 418}]
+        }
+      ]
+    },
+    {
+      "name": "Mathematics",
+      "code": "041",
+      "total_theory_marks": 80,
+      "total_practical_marks": 20,
+      "exam_duration": 180,
+      "units": [
+        {
+          "unit_number": 1,
+          "unit_name": "Relations and Functions",
+          "chapters": [
+            {"name": "Relations and Functions", "marks": 8, "ncert_part": "Part-1", "page_start": 1, "page_end": 30}
+          ]
+        },
+        {
+          "unit_number": 2,
+          "unit_name": "Algebra",
+          "chapters": [
+            {"name": "Matrices", "marks": 10, "ncert_part": "Part-1", "page_start": 54, "page_end": 104}
+          ]
+        },
+        {
+          "unit_number": 3,
+          "unit_name": "Calculus",
+          "chapters": [
+            {"name": "Continuity and Differentiability", "marks": 35, "ncert_part": "Part-1", "page_start": 105, "page_end": 196},
+            {"name": "Applications of Derivatives", "marks": 35, "ncert_part": "Part-1", "page_start": 197, "page_end": 240},
+            {"name": "Integrals", "marks": 35, "ncert_part": "Part-2", "page_start": 1, "page_end": 90},
+            {"name": "Application of Integrals", "marks": 35, "ncert_part": "Part-2", "page_start": 91, "page_end": 118},
+            {"name": "Differential Equations", "marks": 35, "ncert_part": "Part-2", "page_start": 119, "page_end": 158}
+          ]
+        },
+        {
+          "unit_number": 4,
+          "unit_name": "Vectors and Three-Dimensional Geometry",
+          "chapters": [
+            {"name": "Vectors", "marks": 14, "ncert_part": "Part-2", "page_start": 159, "page_end": 192},
+            {"name": "Three-Dimensional Geometry", "marks": 14, "ncert_part": "Part-2", "page_start": 193, "page_end": 230}
+          ]
+        },
+        {
+          "unit_number": 5,
+          "unit_name": "Linear Programming",
+          "chapters": [{"name": "Linear Programming", "marks": 5, "ncert_part": "Part-2", "page_start": 231, "page_end": 258}]
+        },
+        {
+          "unit_number": 6,
+          "unit_name": "Probability",
+          "chapters": [{"name": "Probability", "marks": 8, "ncert_part": "Part-2", "page_start": 259, "page_end": 304}]
+        }
+      ]
+    }
+  ]
+}

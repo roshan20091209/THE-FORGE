@@ -19,6 +19,10 @@ import AttemptWorkspace from './pages/AttemptWorkspace'
 import SubmitSolution from './pages/SubmitSolution'
 import EvaluationResult from './pages/EvaluationResult'
 import PublicCredential from './pages/PublicCredential'
+import TextbookManager from './pages/TextbookManager'
+import QnA from './pages/QnA'
+import AssignmentCompleter from './pages/AssignmentCompleter'
+import QuestionBank from './pages/QuestionBank'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -61,6 +65,10 @@ export default function App() {
             <Route path="/attempts/:id" element={<ProtectedRoute><AttemptWorkspace /></ProtectedRoute>} />
             <Route path="/attempts/:id/submit" element={<ProtectedRoute><SubmitSolution /></ProtectedRoute>} />
             <Route path="/attempts/:id/evaluation" element={<ProtectedRoute><EvaluationResult /></ProtectedRoute>} />
+            <Route path="/textbooks" element={<ProtectedRoute><TextbookManager /></ProtectedRoute>} />
+            <Route path="/ask" element={<ProtectedRoute><QnA /></ProtectedRoute>} />
+            <Route path="/assignment" element={<ProtectedRoute><AssignmentCompleter /></ProtectedRoute>} />
+            <Route path="/question-bank" element={<ProtectedRoute><QuestionBank /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

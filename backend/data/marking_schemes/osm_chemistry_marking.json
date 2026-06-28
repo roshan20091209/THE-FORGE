@@ -1,0 +1,119 @@
+[
+  {
+    "chapter": "Solutions",
+    "subject": "Chemistry",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "State Raoult's law / Henry's law clearly", "marks": 1},
+      {"step": 2, "description": "Write formula with colligative property", "marks": 1},
+      {"step": 3, "description": "Substitute values (molar mass calculation)", "marks": 1},
+      {"step": 4, "description": "Unit conversion (if any) + calculation steps", "marks": 1},
+      {"step": 5, "description": "Final answer with proper unit", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Electrochemistry",
+    "subject": "Chemistry",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Cell diagram with correct notation", "marks": 1},
+      {"step": 2, "description": "Write Nernst equation / EMF formula", "marks": 1},
+      {"step": 3, "description": "Substitute concentration values", "marks": 1},
+      {"step": 4, "description": "Calculate EMF with steps", "marks": 1},
+      {"step": 5, "description": "Final answer with unit (Volt) + cell reaction", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Chemical Kinetics",
+    "subject": "Chemistry",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Rate law expression from given data", "marks": 1},
+      {"step": 2, "description": "Determine order of reaction", "marks": 1},
+      {"step": 3, "description": "Write integrated rate equation", "marks": 1},
+      {"step": 4, "description": "Substitute values / Arrhenius equation", "marks": 1},
+      {"step": 5, "description": "Final answer with unit (k value / half-life)", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "d and f-Block Elements",
+    "subject": "Chemistry",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Electronic configuration (general + specific)", "marks": 1},
+      {"step": 2, "description": "Trends table (atomic radius/IE/EN/Oxidation states)", "marks": 1},
+      {"step": 3, "description": "Property explanation with reason", "marks": 1},
+      {"step": 4, "description": "Magnetic properties / catalytic activity", "marks": 1},
+      {"step": 5, "description": "Compound preparation / colored ion explanation", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Coordination Compounds",
+    "subject": "Chemistry",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "IUPAC name with correct oxidation state", "marks": 1},
+      {"step": 2, "description": "VBT hybridization and geometry", "marks": 1},
+      {"step": 3, "description": "CFT splitting diagram", "marks": 1},
+      {"step": 4, "description": "Magnetic property determination", "marks": 1},
+      {"step": 5, "description": "Isomerism type identification", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Haloalkanes and Haloarenes",
+    "subject": "Chemistry",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Reagent + Condition for preparation", "marks": 1},
+      {"step": 2, "description": "SN1/SN2 mechanism with intermediate", "marks": 1},
+      {"step": 3, "description": "Reactivity order explanation", "marks": 1},
+      {"step": 4, "description": "Named reaction (Finkelstein/Swarts/Wurtz)", "marks": 1},
+      {"step": 5, "description": "Product with correct stereochemistry", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+    "subject": "Chemistry",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Named reaction statement (Aldol/Cannizzaro/Etc.)", "marks": 1},
+      {"step": 2, "description": "Complete mechanism with curved arrows", "marks": 1},
+      {"step": 3, "description": "Intermediate formation", "marks": 1},
+      {"step": 4, "description": "Final product with correct structure", "marks": 1},
+      {"step": 5, "description": "Test/distinction between compounds", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Amines",
+    "subject": "Chemistry",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Basicity order with reason", "marks": 1},
+      {"step": 2, "description": "Hinsberg test procedure and observation", "marks": 1},
+      {"step": 3, "description": "Diazotization reaction conditions", "marks": 1},
+      {"step": 4, "description": "Coupling reaction (azo dye formation)", "marks": 1},
+      {"step": 5, "description": "Separation/purification of mixture", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Biomolecules",
+    "subject": "Chemistry",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Haworth/Fischer structure drawing", "marks": 1},
+      {"step": 2, "description": "Glycosidic linkage/peptide bond formation", "marks": 1},
+      {"step": 3, "description": "DNA/RNA differences table", "marks": 1},
+      {"step": 4, "description": "Enzyme mechanism/Lock-and-Key model", "marks": 1},
+      {"step": 5, "description": "Vitamin deficiency/disorder table", "marks": 1}
+    ]
+  }
+]

@@ -1,0 +1,132 @@
+[
+  {
+    "chapter": "Relations and Functions",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "State given sets and what needs to be proven/found", "marks": 1},
+      {"step": 2, "description": "Prove reflexive/symmetric/transitive (if relation)", "marks": 1},
+      {"step": 3, "description": "Find fog/gof with step-by-step composition", "marks": 1},
+      {"step": 4, "description": "Check injectivity/surjectivity (if function)", "marks": 1},
+      {"step": 5, "description": "Final answer with proper notation", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Matrices",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "State matrix order and given data", "marks": 1},
+      {"step": 2, "description": "Write operation steps (addition/multiplication)", "marks": 1},
+      {"step": 3, "description": "Find determinant/us of adjoint method", "marks": 1},
+      {"step": 4, "description": "Calculate inverse correctly", "marks": 1},
+      {"step": 5, "description": "Verify consistency/apply to system of equations", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Continuity and Differentiability",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Check domain and continuity conditions", "marks": 1},
+      {"step": 2, "description": "LHD = RHD = f(a) for continuity", "marks": 1},
+      {"step": 3, "description": "Apply chain rule/derivative formula", "marks": 1},
+      {"step": 4, "description": "Parametric/implicit differentiation steps", "marks": 1},
+      {"step": 5, "description": "Simplify to final derivative expression", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Applications of Derivatives",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Define function and find derivative", "marks": 1},
+      {"step": 2, "description": "Set up rate of change / maxima-minima equation", "marks": 1},
+      {"step": 3, "description": "Find critical points (f'(x)=0)", "marks": 1},
+      {"step": 4, "description": "Second derivative test / sign analysis", "marks": 1},
+      {"step": 5, "description": "Maximum/minimum value with proper justification", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Integrals",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Identify method (substitution/parts/partial fractions)", "marks": 1},
+      {"step": 2, "description": "Apply substitution or break into partial fractions", "marks": 1},
+      {"step": 3, "description": "Integrate step by step", "marks": 1},
+      {"step": 4, "description": "Use definite integral properties (if applicable)", "marks": 1},
+      {"step": 5, "description": "Final answer with constant of integration + simplification", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Differential Equations",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Identify type (variable separable/homogeneous/linear)", "marks": 1},
+      {"step": 2, "description": "Separate variables / find integrating factor", "marks": 1},
+      {"step": 3, "description": "Integrate both sides", "marks": 1},
+      {"step": 4, "description": "Apply initial condition to find constant", "marks": 1},
+      {"step": 5, "description": "Particular solution / general solution", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Vectors",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Write vectors in component form", "marks": 1},
+      {"step": 2, "description": "Dot product / cross product formula", "marks": 1},
+      {"step": 3, "description": "Magnitude calculation", "marks": 1},
+      {"step": 4, "description": "Angle between vectors / projection", "marks": 1},
+      {"step": 5, "description": "Final answer with vector/scalar result", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Three-Dimensional Geometry",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Direction cosines/ratios from given data", "marks": 1},
+      {"step": 2, "description": "Equation of line/plane in correct form", "marks": 1},
+      {"step": 3, "description": "Find angle between lines/planes", "marks": 1},
+      {"step": 4, "description": "Distance formula application", "marks": 1},
+      {"step": 5, "description": "Final answer with vector/cartesian form", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Linear Programming",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Define variables and objective function", "marks": 1},
+      {"step": 2, "description": "Write all constraints as inequalities", "marks": 1},
+      {"step": 3, "description": "Graph feasible region with correct shading", "marks": 1},
+      {"step": 4, "description": "Find corner points of feasible region", "marks": 1},
+      {"step": 5, "description": "Evaluate Z at corners — final optimal value", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Probability",
+    "subject": "Mathematics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Define events and given probabilities", "marks": 1},
+      {"step": 2, "description": "Bayes' theorem setup / conditional probability tree", "marks": 1},
+      {"step": 3, "description": "Calculate required probabilities", "marks": 1},
+      {"step": 4, "description": "Apply theorem correctly", "marks": 1},
+      {"step": 5, "description": "Final probability with proper notation", "marks": 1}
+    ]
+  }
+]

@@ -1,13 +1,14 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Home, Target, Layers, User, Users } from 'lucide-react'
+import { MessageSquare, BookOpen, ClipboardList, User, Layers, GraduationCap } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
 const tabs = [
-  { path: '/dashboard', label: 'Home', icon: Home, auth: true },
-  { path: '/simulations', label: 'Challenges', icon: Target },
-  { path: '/', label: 'The Forge', icon: Layers, exact: true },
-  { path: '/leaderboard', label: 'Leaderboard', icon: Users, auth: true },
+  { path: '/ask', label: 'Ask', icon: MessageSquare, auth: true },
+  { path: '/textbooks', label: 'Books', icon: BookOpen, auth: true },
+  { path: '/', label: 'Forge', icon: Layers, exact: true },
+  { path: '/assignment', label: 'HW', icon: ClipboardList, auth: true },
+  { path: '/question-bank', label: 'QBank', icon: GraduationCap, auth: true },
   { path: '/profile', label: 'Profile', icon: User, auth: true },
 ]
 
@@ -15,7 +16,7 @@ export default function BottomNav() {
   const location = useLocation()
   const { user } = useAuth()
 
-  const hidePaths = ['/login', '/register', '/auth/', '/attempts/', '/c/']
+  const hidePaths = ['/login', '/register', '/auth/', '/attempts/', '/c/', '/question-bank']
   if (hidePaths.some(p => location.pathname.startsWith(p))) return null
   if (!user && !['/', '/simulations'].includes(location.pathname)) return null
 

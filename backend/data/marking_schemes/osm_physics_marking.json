@@ -1,0 +1,138 @@
+[
+  {
+    "chapter": "Electric Charges and Fields",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "State Coulomb's law or relevant principle clearly", "marks": 1},
+      {"step": 2, "description": "Write formula F = k(q1q2)/r^2 with symbols defined", "marks": 1},
+      {"step": 3, "description": "Write vector form or substitution with proper units", "marks": 1},
+      {"step": 4, "description": "Mention nature of force (attractive/repulsive) and SI units", "marks": 1},
+      {"step": 5, "description": "Final answer with proper unit and sign convention", "marks": 1}
+    ],
+    "common_mistakes": [
+      "Forgetting to mention medium is vacuum/air",
+      "Using wrong value of k (8.99 vs 9x10^9)",
+      "Missing vector notation",
+      "Not specifying direction"
+    ]
+  },
+  {
+    "chapter": "Electrostatic Potential and Capacitance",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Definition/concept of potential/capacitance", "marks": 1},
+      {"step": 2, "description": "Diagram (if applicable) + Formula derivation", "marks": 1},
+      {"step": 3, "description": "Substitution of values with units", "marks": 1},
+      {"step": 4, "description": "Calculation steps shown clearly", "marks": 1},
+      {"step": 5, "description": "Final answer with proper SI unit", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Current Electricity",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Circuit diagram / State the law", "marks": 1},
+      {"step": 2, "description": "Write formula/Ohm's law with symbols", "marks": 1},
+      {"step": 3, "description": "Substitute values with units", "marks": 1},
+      {"step": 4, "description": "Show calculation steps (equivalent resistance, etc.)", "marks": 1},
+      {"step": 5, "description": "Boxed final answer with unit", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Moving Charges and Magnetism",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "State the law (Biot-Savart/Ampere's/Lorentz force)", "marks": 1},
+      {"step": 2, "description": "Direction using Fleming's Left Hand Rule (if applicable)", "marks": 1},
+      {"step": 3, "description": "Formula with vector form", "marks": 1},
+      {"step": 4, "description": "Substitution and vector calculation", "marks": 1},
+      {"step": 5, "description": "Final answer with direction and unit", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Electromagnetic Induction",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "State Faraday's law and Lenz's law", "marks": 1},
+      {"step": 2, "description": "Write formula for induced EMF (E = -dΦ/dt)", "marks": 1},
+      {"step": 3, "description": "Set up the problem with given data", "marks": 1},
+      {"step": 4, "description": "Calculate flux/EMF with steps", "marks": 1},
+      {"step": 5, "description": "Final answer with unit (Volt) and direction", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Alternating Current",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Phasor diagram/Concept explanation", "marks": 1},
+      {"step": 2, "description": "Write RMS/Peak relation formula", "marks": 1},
+      {"step": 3, "description": "Derivation of impedance/power factor", "marks": 1},
+      {"step": 4, "description": "Substitution with values", "marks": 1},
+      {"step": 5, "description": "Final answer (power factor/current/voltage)", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Ray Optics and Optical Instruments",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Ray diagram with proper labeling", "marks": 1},
+      {"step": 2, "description": "Write mirror/lens formula with sign convention", "marks": 1},
+      {"step": 3, "description": "Substitute values (signs must be correct)", "marks": 1},
+      {"step": 4, "description": "Calculate with steps", "marks": 1},
+      {"step": 5, "description": "Final answer with unit and nature of image", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Wave Optics",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Concept/Principle (Huygens/Interference/Diffraction)", "marks": 1},
+      {"step": 2, "description": "Path difference formula/condition", "marks": 1},
+      {"step": 3, "description": "Fringe width formula and derivation", "marks": 1},
+      {"step": 4, "description": "Young's experiment setup description", "marks": 1},
+      {"step": 5, "description": "Final expression/numerical answer", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Dual Nature of Radiation and Matter",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "State Einstein's photoelectric equation", "marks": 1},
+      {"step": 2, "description": "Write formula: hf = hf0 + (1/2)mv^2", "marks": 1},
+      {"step": 3, "description": "Explain stopping potential concept/graph", "marks": 1},
+      {"step": 4, "description": "de Broglie wavelength formula and calculation", "marks": 1},
+      {"step": 5, "description": "Final answer with proper unit (eV/J)", "marks": 1}
+    ]
+  },
+  {
+    "chapter": "Semiconductor Electronics",
+    "subject": "Physics",
+    "question_type": "LA",
+    "marks": 5,
+    "steps": [
+      {"step": 1, "description": "Band diagram (conduction/valence/forbidden gap)", "marks": 1},
+      {"step": 2, "description": "Diode characteristics (forward/reverse bias)", "marks": 1},
+      {"step": 3, "description": "Application circuit diagram (rectifier/amplifier)", "marks": 1},
+      {"step": 4, "description": "Working explanation with input/output waveforms", "marks": 1},
+      {"step": 5, "description": "Logic gate truth table and boolean expression", "marks": 1}
+    ]
+  }
+]
