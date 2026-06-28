@@ -6,6 +6,7 @@ export default function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [school, setSchool] = useState('')
   const [error, setError] = useState('')
   const { register, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
@@ -14,7 +15,7 @@ export default function Register() {
     e.preventDefault()
     setError('')
     try {
-      await register(email, password, fullName)
+      await register(email, password, fullName, school)
       navigate('/dashboard')
     } catch (err) {
       setError(err.message)
@@ -31,7 +32,8 @@ export default function Register() {
 
   return (
     <div className="max-w-md mx-auto px-4 py-20">
-      <h1 className="text-3xl font-bold mb-8 text-center">Create Account</h1>
+      <h1 className="text-3xl font-bold mb-2 text-center">Join The Forge</h1>
+      <p className="text-gray-400 text-center mb-8 text-sm">Start building proof that companies look for.</p>
       {error && <div className="bg-red-900/50 border border-red-700 text-red-200 rounded-lg p-3 mb-4 text-sm">{error}</div>}
 
       <button onClick={handleGoogle} className="w-full bg-white hover:bg-gray-200 text-gray-900 px-4 py-2.5 rounded-lg font-semibold transition mb-6 flex items-center justify-center gap-2">
@@ -47,17 +49,21 @@ export default function Register() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm text-gray-400 mb-1">Full Name</label>
-          <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-forge-500" />
+          <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-forge-500" required />
         </div>
         <div>
           <label className="block text-sm text-gray-400 mb-1">Email</label>
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-forge-500" required />
         </div>
         <div>
+          <label className="block text-sm text-gray-400 mb-1">School Name</label>
+          <input type="text" value={school} onChange={e => setSchool(e.target.value)} placeholder="e.g. St. Mary's School, Chennai" className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-forge-500" />
+        </div>
+        <div>
           <label className="block text-sm text-gray-400 mb-1">Password</label>
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} minLength={6} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-forge-500" required />
         </div>
-        <button type="submit" className="w-full bg-forge-600 hover:bg-forge-500 px-4 py-2 rounded-lg font-semibold transition">Register</button>
+        <button type="submit" className="w-full bg-forge-600 hover:bg-forge-500 px-4 py-2 rounded-lg font-semibold transition">Create Account</button>
       </form>
       <p className="text-center text-gray-400 mt-4 text-sm">
         Already have an account? <Link to="/login" className="text-forge-400 hover:underline">Login</Link>

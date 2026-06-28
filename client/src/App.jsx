@@ -10,12 +10,9 @@ import SimulationDetail from './pages/SimulationDetail'
 import Dashboard from './pages/Dashboard'
 import AttemptWorkspace from './pages/AttemptWorkspace'
 import SubmitSolution from './pages/SubmitSolution'
-import Credential from './pages/Credential'
+import EvaluationResult from './pages/EvaluationResult'
 import PublicCredential from './pages/PublicCredential'
-import PeerReviews from './pages/PeerReviews'
-import EmployerDashboard from './pages/EmployerDashboard'
-import EmployerCandidates from './pages/EmployerCandidates'
-import AdminSqlEditor from './pages/AdminSqlEditor'
+import NotFound from './pages/NotFound'
 
 export default function App() {
   return (
@@ -32,11 +29,8 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/attempts/:id" element={<ProtectedRoute><AttemptWorkspace /></ProtectedRoute>} />
         <Route path="/attempts/:id/submit" element={<ProtectedRoute><SubmitSolution /></ProtectedRoute>} />
-        <Route path="/credentials/:id" element={<ProtectedRoute><Credential /></ProtectedRoute>} />
-        <Route path="/reviews/pending" element={<ProtectedRoute><PeerReviews /></ProtectedRoute>} />
-        <Route path="/employer/dashboard" element={<ProtectedRoute><EmployerDashboard /></ProtectedRoute>} />
-        <Route path="/employer/candidates" element={<ProtectedRoute><EmployerCandidates /></ProtectedRoute>} />
-        <Route path="/admin/sql" element={<ProtectedRoute><AdminSqlEditor /></ProtectedRoute>} />
+        <Route path="/attempts/:id/evaluation" element={<ProtectedRoute><EvaluationResult /></ProtectedRoute>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   )

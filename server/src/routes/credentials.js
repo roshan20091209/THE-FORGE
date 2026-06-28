@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { select, selectOne, insert, getSupabase } from '../db.js';
 import { authenticateToken } from '../auth.js';
-import { generateCredentialSummary } from '../ai.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const router = Router();
@@ -17,23 +16,9 @@ router.post('/', authenticateToken, async (req, res) => {
   const scores = await selectOne('dimension_scores', '*', { where: { attempt_id } });
   if (!scores) return res.status(400).json({ error: 'Evaluation not found' });
 
-  const sim = await selectOne('simulations', '*', { where: { id: attempt.simulation_id } });
-  const user = await selectOne('users', '*', { where: { id: req.user.id } });
   const slug = uuidv4().slice(0, 8);
-
-  const summary = await generateCredentialSummary(
-    { full_name: user?.full_name, email: user?.email },
-    { title: sim?.title, industry: sim?.industry },
-    {
-      wrong_and_recovered_score: scores.wrong_and_recovered_score,
-      pressure_communication_score: scores.pressure_communication_score,
-      mid_process_pivot_score: scores.mid_process_pivot_score,
-      unblocking_agency_score: scores.unblocking_agency_score
-    }
-  );
-
   await insert('credentials', { user_id: req.user.id, attempt_id, credential_slug: slug });
-  res.status(201).json({ credential: { slug, summary } });
+  res.status(201).json({ credential: { slug } });
 });
 
 router.get('/', authenticateToken, async (req, res) => {
@@ -59,22 +44,23 @@ router.get('/:id', async (req, res) => {
   await sb.from('credentials').update({ view_count: (cred.view_count || 0) + 1 }).eq('id', cred.id);
 
   const scores = await selectOne('dimension_scores', '*', { where: { attempt_id: cred.attempt_id } });
-  const attempt = await selectOne('simulation_attempts', '*', { where: { id: cred.attempt_id } });
+  const attempt = await selectOne('simulation_attempts', '*, evaluation_result', { where: { id: cred.attempt_id } });
   const sim = attempt ? await selectOne('simulations', '*', { where: { id: attempt.simulation_id } }) : null;
   const user = await selectOne('users', 'id, email, full_name', { where: { id: cred.user_id } });
 
+  const rawEval = attempt?.evaluation_result ? JSON.parse(attempt.evaluation_result) : null;
+
   res.json({
-    credential: { id: cred.id, slug: cred.credential_slug, view_count: (cred.view_count || 0) + 1, created_at: cred.created_at, is_public: cred.is_public },
-    user: user || null,
+    credential: { id: cred.id, slug: cred.credential_slug, view_count: (cred.view_count || 0) + 1, created_at: cred.created_at },
+    user,
     simulation: sim ? { title: sim.title, industry: sim.industry, difficulty: sim.difficulty, description: sim.description } : null,
+    evaluation: rawEval,
     scores: scores ? {
       wrong_and_recovered: scores.wrong_and_recovered_score,
       pressure_communication: scores.pressure_communication_score,
       mid_process_pivot: scores.mid_process_pivot_score,
       unblocking_agency: scores.unblocking_agency_score,
-      overall_percentile: scores.overall_percentile,
-      notes: scores.ai_evaluation_notes
-    } : null
+    } : null,
   });
 });
 

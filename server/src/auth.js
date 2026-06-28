@@ -17,7 +17,7 @@ export function comparePassword(password, hash) {
 }
 
 export function signLocalToken(user) {
-  return jwt.sign({ id: user.id, email: user.email, role: user.role || 'participant' }, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ id: user.id, email: user.email, role: user.role || 'participant' }, JWT_SECRET, { expiresIn: '24h' });
 }
 
 export function verifyLocalToken(token) {

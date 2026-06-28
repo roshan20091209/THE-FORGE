@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         localStorage.setItem('token', session.access_token)
-        api.auth.me().then(d => setUser(d.user)).catch(() => setUser({ email: session.user.email, id: session.user.id, role: 'participant' }))
+        api.auth.me().then(d => setUser(d.user)).catch(() => setUser({ email: session.user.email, id: session.user.id, role: 'participant', streak: 0, total_points: 0 }))
       }
       setLoading(false)
     })
@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         localStorage.setItem('token', session.access_token)
-        api.auth.me().then(d => setUser(d.user)).catch(() => setUser({ email: session.user.email, id: session.user.id, role: 'participant' }))
+        api.auth.me().then(d => setUser(d.user)).catch(() => setUser({ email: session.user.email, id: session.user.id, role: 'participant', streak: 0, total_points: 0 }))
       } else {
         localStorage.removeItem('token')
         setUser(null)
@@ -36,8 +36,8 @@ export function AuthProvider({ children }) {
     return data
   }
 
-  const register = async (email, password, full_name) => {
-    const data = await api.auth.register({ email, password, full_name })
+  const register = async (email, password, full_name, school) => {
+    const data = await api.auth.register({ email, password, full_name, school })
     localStorage.setItem('token', data.token)
     setUser(data.user)
     return data

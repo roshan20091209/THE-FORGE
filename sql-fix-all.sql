@@ -1,68 +1,57 @@
 -- ============================================================
--- THE FORGE - COMPREHENSIVE FIX (paste entire file, run once)
+-- THE FORGE - COMPLETE RESET (paste entire file, run once in Supabase SQL Editor)
 -- ============================================================
 
--- 1. Wipe all data clean (order matters for FK constraints)
-DELETE FROM peer_reviews;
-DELETE FROM credentials;
-DELETE FROM dimension_scores;
-DELETE FROM simulation_attempts;
-DELETE FROM simulations;
-DELETE FROM users;
+-- 1. Add new columns for gamification & student features
+ALTER TABLE users ADD COLUMN IF NOT EXISTS school TEXT DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS streak INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS total_points INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS has_seen_navigator INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS total_simulations_completed INTEGER DEFAULT 0;
 
--- 2. Re-enable RLS on all tables
+ALTER TABLE simulation_attempts ADD COLUMN IF NOT EXISTS attempt_number INTEGER DEFAULT 1;
+ALTER TABLE simulation_attempts ADD COLUMN IF NOT EXISTS points_earned INTEGER DEFAULT 0;
+ALTER TABLE simulation_attempts ADD COLUMN IF NOT EXISTS evaluation_status TEXT DEFAULT 'pending';
+ALTER TABLE simulation_attempts ADD COLUMN IF NOT EXISTS evaluation_result TEXT;
+ALTER TABLE simulation_attempts ADD COLUMN IF NOT EXISTS evaluated_at TEXT;
+
+ALTER TABLE credentials ADD COLUMN IF NOT EXISTS overall_score INTEGER;
+ALTER TABLE credentials ADD COLUMN IF NOT EXISTS overall_percentile TEXT;
+ALTER TABLE credentials ADD COLUMN IF NOT EXISTS report_html TEXT;
+
+-- 2. Enable RLS on all tables
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE simulations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE simulation_attempts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dimension_scores ENABLE ROW LEVEL SECURITY;
 ALTER TABLE credentials ENABLE ROW LEVEL SECURITY;
-ALTER TABLE peer_reviews ENABLE ROW LEVEL SECURITY;
 
--- 3. Drop all existing policies (old names + new names)
-DROP POLICY IF EXISTS "Users can read own data" ON users;
-DROP POLICY IF EXISTS "Users can insert own data" ON users;
-DROP POLICY IF EXISTS "Users can update own data" ON users;
+-- 3. Drop existing policies
 DROP POLICY IF EXISTS "Anyone can read users" ON users;
 DROP POLICY IF EXISTS "Anyone can insert users" ON users;
 DROP POLICY IF EXISTS "Anyone can update users" ON users;
-DROP POLICY IF EXISTS "Anyone can read public simulations" ON simulations;
-DROP POLICY IF EXISTS "Admins can insert simulations" ON simulations;
-DROP POLICY IF EXISTS "Admins can update simulations" ON simulations;
-DROP POLICY IF EXISTS "Admins can delete simulations" ON simulations;
 DROP POLICY IF EXISTS "Anyone can read simulations" ON simulations;
 DROP POLICY IF EXISTS "Anyone can insert simulations" ON simulations;
 DROP POLICY IF EXISTS "Anyone can update simulations" ON simulations;
 DROP POLICY IF EXISTS "Anyone can delete simulations" ON simulations;
-DROP POLICY IF EXISTS "Users can read own attempts" ON simulation_attempts;
-DROP POLICY IF EXISTS "Users can insert own attempts" ON simulation_attempts;
-DROP POLICY IF EXISTS "Users can update own attempts" ON simulation_attempts;
 DROP POLICY IF EXISTS "Anyone can read attempts" ON simulation_attempts;
 DROP POLICY IF EXISTS "Anyone can insert attempts" ON simulation_attempts;
 DROP POLICY IF EXISTS "Anyone can update attempts" ON simulation_attempts;
-DROP POLICY IF EXISTS "Users can read own scores" ON dimension_scores;
-DROP POLICY IF EXISTS "System can insert scores" ON dimension_scores;
-DROP POLICY IF EXISTS "System can update scores" ON dimension_scores;
 DROP POLICY IF EXISTS "Anyone can read scores" ON dimension_scores;
 DROP POLICY IF EXISTS "Anyone can insert scores" ON dimension_scores;
 DROP POLICY IF EXISTS "Anyone can update scores" ON dimension_scores;
-DROP POLICY IF EXISTS "Users can read own credentials" ON credentials;
-DROP POLICY IF EXISTS "Users can insert own credentials" ON credentials;
 DROP POLICY IF EXISTS "Anyone can read credentials" ON credentials;
 DROP POLICY IF EXISTS "Anyone can insert credentials" ON credentials;
-DROP POLICY IF EXISTS "Users can read reviews for review queue" ON peer_reviews;
-DROP POLICY IF EXISTS "Users can insert own reviews" ON peer_reviews;
-DROP POLICY IF EXISTS "Anyone can read reviews" ON peer_reviews;
-DROP POLICY IF EXISTS "Anyone can insert reviews" ON peer_reviews;
 
--- 4. Recreate policies (permissive for demo — can lock down later)
+-- 4. Create permissive policies
 CREATE POLICY "Anyone can read users" ON users FOR SELECT USING (true);
 CREATE POLICY "Anyone can insert users" ON users FOR INSERT WITH CHECK (true);
 CREATE POLICY "Anyone can update users" ON users FOR UPDATE USING (true);
 
-CREATE POLICY "Anyone can read public simulations" ON simulations FOR SELECT USING (true);
-CREATE POLICY "Admins can insert simulations" ON simulations FOR INSERT WITH CHECK (true);
-CREATE POLICY "Admins can update simulations" ON simulations FOR UPDATE USING (true);
-CREATE POLICY "Admins can delete simulations" ON simulations FOR DELETE USING (true);
+CREATE POLICY "Anyone can read simulations" ON simulations FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert simulations" ON simulations FOR INSERT WITH CHECK (true);
+CREATE POLICY "Anyone can update simulations" ON simulations FOR UPDATE USING (true);
+CREATE POLICY "Anyone can delete simulations" ON simulations FOR DELETE USING (true);
 
 CREATE POLICY "Anyone can read attempts" ON simulation_attempts FOR SELECT USING (true);
 CREATE POLICY "Anyone can insert attempts" ON simulation_attempts FOR INSERT WITH CHECK (true);
@@ -75,60 +64,85 @@ CREATE POLICY "Anyone can update scores" ON dimension_scores FOR UPDATE USING (t
 CREATE POLICY "Anyone can read credentials" ON credentials FOR SELECT USING (true);
 CREATE POLICY "Anyone can insert credentials" ON credentials FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Anyone can read reviews" ON peer_reviews FOR SELECT USING (true);
-CREATE POLICY "Anyone can insert reviews" ON peer_reviews FOR INSERT WITH CHECK (true);
-
--- 5. Seed users (passwords: admin123, employer123, participant123)
-INSERT INTO users (id, email, password_hash, full_name, role) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'admin@theforge.io',       '$2a$10$IoO0ohuYknbNc9vq6GDr/usqWRuozQwS/OLyw0SU7ZanLRa/ADtmm', 'Admin User',  'admin'),
-  ('00000000-0000-0000-0000-000000000002', 'employer@theforge.dev',   '$2a$10$sVzhDQhMe7vr.5mI430UeOa6VaocijmYqAqUx9uUF6mbWsRSdj8XK', 'TechCorp HR', 'employer'),
-  ('00000000-0000-0000-0000-000000000003', 'participant@theforge.dev', '$2a$10$6BfVUrwN5DMFnUJYBqyeAOEwNOv5GHReaKcyn2SuTNVAeK17m73nq', 'Alex Rivera', 'participant')
-ON CONFLICT (id) DO NOTHING;
-
--- 6. Seed simulations
-INSERT INTO simulations (id, title, description, industry, difficulty, duration_hours, problem_brief, success_criteria, crisis_scenarios, created_by, is_public) VALUES
+-- 5. Seed simulations (3 difficulty levels for student-friendly challenges)
+INSERT INTO simulations (id, title, description, industry, difficulty, duration_hours, problem_brief, created_by, is_public) VALUES
+-- EASY (beginner) challenges
 (
   '00000000-0000-0000-0000-000000000101',
-  'Mobile App Performance Crisis',
-  'Your startup mobile app is getting 1-star reviews due to slow load times. Users are abandoning the app after 3 seconds. You have 72 hours to diagnose and fix the core issues.',
-  'Technology', 'intermediate', 72,
-  E'Our fitness tracking app "FitPulse" launched 3 months ago and had 50,000 downloads. In the last week, reviews have tanked from 4.2 to 2.1 stars. Users complain the app is "unbearably slow" and "crashes during workouts."\n\nYour task: Diagnose the root cause, propose a fix, and implement a plan to recover our app store rating.\n\nContext:\n- React Native app with Node.js backend\n- PostgreSQL database with 500K+ user records\n- Image-heavy workout feed\n- Real-time workout tracking via WebSocket\n- Third-party APIs: Google Fit, Apple Health, Stripe\n\nThe CEO wants a full technical analysis and recovery plan within 72 hours.',
-  '["Root cause identified","Fix proposed with timeline","Rating recovery strategy","Technical implementation plan"]',
-  '["requirements_change","teammate_conflict","resource_constraint","client_complaint"]',
+  'Find the Bug',
+  'A startup''s login page is broken. Users can''t sign up. Find the bug and fix it.',
+  'Technology', 'beginner', 24,
+  E'FitTrack has 500 daily signups — or it did until yesterday. Now the login page shows "Error 500" for every new user. The team is panicking.\n\nYour task: Figure out what went wrong and how to fix it.\n\nWhat you know:\n- The app was working fine until last night\n- A junior dev deployed a "small change" to the auth module\n- The error logs show: "TypeError: Cannot read property ''id'' of undefined" at auth.js:45\n- The database has 50K+ user records\n\nThis could be a missing null check, a broken database query, or a wrong API endpoint. Where do you start looking?',
   '00000000-0000-0000-0000-000000000001', true
 ),
 (
   '00000000-0000-0000-0000-000000000102',
-  'Data Pipeline Migration',
-  'A fintech company needs to migrate their real-time transaction processing pipeline from legacy infrastructure to a modern cloud-native solution. Zero downtime required.',
-  'Data Engineering', 'advanced', 48,
-  E'FinFlow Inc. processes $2M in daily transactions. Their current pipeline was built 5 years ago and is failing under load. Transaction processing time has increased from 200ms to 4 seconds.\n\nYour task: Design a new data pipeline architecture that scales to handle 10x current volume with <100ms latency.\n\nCurrent stack:\n- Monolithic Java application\n- Oracle database (on-premise)\n- Custom message queue (built in-house, unreliable)\n- Manual deployment process\n\nTarget stack (your choice):\n- Kafka or similar for streaming\n- Cloud-native (AWS/GCP/Azure)\n- Real-time analytics capability\n- Automated CI/CD\n\nYou have 48 hours to present your migration plan to the CTO.',
-  '["Architecture diagram","Migration strategy","Zero-downtime plan","Cost analysis","Team requirements"]',
-  '["resource_constraint","client_complaint","requirements_change"]',
+  'Design a School Timetable App',
+  'Your school needs a simple app to show the daily timetable. Design the core features and how it would work.',
+  'Product Management', 'beginner', 24,
+  E'Your school principal saw a cool timetable app at another school and wants one for yours. The current system: paper notices on the board that get lost or torn.\n\nYour task: Design what this app should do and how students would use it.\n\nConsider:\n- Students check it 3-4 times a day\n- Teachers need to update class schedules\n- Some classrooms get changed last minute\n- Not everyone has a smartphone (but most do)\n\nYou don''t need to code it. Just explain what features it needs and why.',
   '00000000-0000-0000-0000-000000000001', true
 ),
 (
   '00000000-0000-0000-0000-000000000103',
-  'Hospital Emergency Response System',
-  'A regional hospital needs to redesign their emergency response system after a near-fatal incident revealed critical communication gaps between departments.',
-  'Healthcare', 'intermediate', 72,
-  E'St. Mary\'s Hospital serves 200,000+ patients annually. During a recent code blue emergency, the response team took 8 minutes to assemble instead of the required 2 minutes. The investigation revealed:\n- Pagers frequently miss messages in basement levels\n- No unified dashboard showing bed availability\n- Lab results take 30+ minutes to reach ER doctors\n- Pharmacy and ER use different communication systems\n\nYour task: Design an integrated emergency response system that ensures sub-2-minute response times.\n\nThe hospital board wants a complete redesign proposal within 72 hours. Budget is constrained at $500K.',
-  '["Communication gap analysis","System architecture","Integration plan","Budget breakdown","Implementation timeline"]',
-  '["resource_constraint","teammate_conflict","client_complaint"]',
+  'Help a Friend Choose a Career',
+  'Your friend is good at 3 things but can''t decide what to study. Help them figure it out systematically.',
+  'Consulting', 'beginner', 24,
+  E'Your friend Ravi is in 12th grade and confused about what to do after school.\n\nHe is good at:\n1. Explaining things to people (friends always ask him for help)\n2. Maths and statistics (scores 85%+)\n3. Drawing and design (won school-level competitions)\n\nHe has 3 months to decide. His parents want him to do engineering. He is not sure.\n\nYour task: Create a simple framework Ravi can use to make this decision. What questions should he ask himself? How can he test each option without committing? What are the trade-offs?',
+  '00000000-0000-0000-0000-000000000001', true
+),
+-- INTERMEDIATE challenges
+(
+  '00000000-0000-0000-0000-000000000201',
+  'E-Commerce Checkout Disaster',
+  'A growing online store has a 70% cart abandonment rate. Diagnose why and fix it.',
+  'Technology', 'intermediate', 48,
+  E'QuickCart is a small e-commerce platform doing 100 orders/day. But 7 out of 10 people who add items to cart never complete the purchase.\n\nThe founder is losing sleep over this. The industry average is 50% abandonment — QuickCart is at 70%.\n\nWhat you know:\n- Most people drop off at the payment page\n- The checkout has 5 steps\n- Mobile users abandon at 80% rate\n- Desktop users abandon at 55% rate\n- 60% of traffic is from mobile\n\nYour task: Identify the likely causes and propose specific fixes. What data would you want to see? What would you test first?',
   '00000000-0000-0000-0000-000000000001', true
 ),
 (
-  '00000000-0000-0000-0000-000000000104',
-  'E-Commerce Platform Security Breach',
-  'A growing e-commerce platform has suffered a data breach affecting 100K customers. You must lead the incident response and redesign the security architecture.',
-  'Cybersecurity', 'advanced', 48,
-  E'ShopStream, an e-commerce platform doing $10M/month in revenue, discovered unauthorized access to their customer database. The breach exposed:\n- Customer names, emails, and hashed passwords\n- Partial credit card numbers (last 4 digits)\n- Order history and shipping addresses\n\nThe breach was discovered when customers reported unauthorized login attempts.\n\nYour task:\n1. Contain the breach and secure the infrastructure\n2. Design a new security architecture\n3. Plan customer communication strategy\n4. Implement long-term security improvements\n\nThe CEO needs a full incident response plan within 48 hours. Legal team is standing by.',
-  '["Incident containment verified","Security architecture designed","Customer communication plan","Long-term security roadmap","Compliance assessment"]',
-  '["client_complaint","resource_constraint","requirements_change"]',
+  '00000000-0000-0000-0000-000000000202',
+  'School Cricket Team Selection',
+  'Your school has 50 students trying out for 11 spots. Build a fair selection system.',
+  'Operations', 'intermediate', 48,
+  E'Your school cricket team has 50 students trying out for 11 spots. Last year, the selection was a mess — the captain picked his friends, and the team lost every match.\n\nThis year, the sports teacher wants a DATA-DRIVEN selection process. But there''s no data yet.\n\nYour task: Design a tryout process that is fair, objective, and produces the best team.\n\nConstraints:\n- Only 2 days for tryouts\n- Need to test batting, bowling, fielding, fitness\n- Some players are specialists (only batting or only bowling)\n- You need at least 3 bowlers and 1 wicket-keeper\n- Budget: Rs. 5,000 for the entire process\n\nHow would you evaluate 50 players in 2 days? What metrics would you track? How do you handle the politics of selection?',
+  '00000000-0000-0000-0000-000000000001', true
+),
+(
+  '00000000-0000-0000-0000-000000000203',
+  'Plan a College Fest on Zero Budget',
+  'Your college fest committee has no budget but needs to organize a 2-day event. Figure it out.',
+  'Product Management', 'intermediate', 48,
+  E'You are the head of your college fest committee. The good news: everyone is excited. The bad news: the administration gave you ZERO budget this year.\n\nLast year''s fest cost Rs. 2 Lakhs. You need to match it or exceed it with Rs. 0.\n\nYour task: Create a plan to make this happen.\n\nWhat you have:\n- 20 committee members\n- College grounds and classrooms (free)\n- 2,000 students as potential audience\n- Local businesses that might sponsor\n- Social media (college has 5K Instagram followers)\n\nWhat you need:\n- Prize money for events (minimum Rs. 5,000)\n- Sound system, stage, decorations\n- Food and water for 2 days\n- Guest artists (optional but attractive)\n\nHow do you make this work? Be creative and practical.',
+  '00000000-0000-0000-0000-000000000001', true
+),
+-- ADVANCED challenges
+(
+  '00000000-0000-0000-0000-000000000301',
+  'Secure a School Management System',
+  'Your school''s online portal was hacked. Student data was leaked. Design a security fix.',
+  'Cybersecurity', 'advanced', 72,
+  E'Your school launched a new online portal where students can view grades, attendance, and pay fees. Last week, someone broke in and leaked 200 students'' personal data (names, phone numbers, addresses).\n\nThe school is panicking. Parents are angry. The principal wants answers.\n\nYour task: Investigate the breach and design a secure system.\n\nWhat you know:\n- The portal was built by a local company for Rs. 50,000\n- Students log in with their roll number (no password!)\n- The "forgot password" link doesn''t exist\n- All data is stored in a single database without encryption\n- The school''s Wi-Fi network has no password\n\nThe tech team says "just add a password." That won''t fix everything. What else needs to change?',
+  '00000000-0000-0000-0000-000000000001', true
+),
+(
+  '00000000-0000-0000-0000-000000000302',
+  'Build a Study Group Matcher',
+  'Design a system that matches students into effective study groups based on their strengths and weaknesses.',
+  'Technology', 'advanced', 72,
+  E'Your school wants to create a "study group program" where 4-5 students work together on subjects they struggle with. But random groups don''t work — one person ends up doing all the work.\n\nYour task: Design an algorithm and system that creates OPTIMAL study groups.\n\nData available:\n- Each student''s grades in 6 subjects (Math, Physics, Chemistry, English, CS, Biology)\n- Each student''s preferred study time (morning/evening/night)\n- Each student''s personality type (from a quiz)\n- Friend/enemy lists (who they work well with vs. who distracts them)\n\nConstraints:\n- Groups must have 4-5 members\n- Each group needs at least one strong student in every subject\n- No two people who marked each other as "enemy" in same group\n- Groups should be balanced overall (no "super groups" and "bad groups")\n- A student can only be in one group\n\nHow would you solve this? What data matters most? What trade-offs would you make?',
+  '00000000-0000-0000-0000-000000000001', true
+),
+(
+  '00000000-0000-0000-0000-000000000303',
+  'Revive a Dying Instagram Page',
+  'Your friend''s Instagram meme page has 10K followers but gets only 50 likes per post. Turn it around in 30 days.',
+  'Marketing', 'advanced', 72,
+  E'Your friend runs a "college memes" Instagram page with 10,000 followers. But engagement is terrible — only 50 likes per post when similar pages get 1,000+.\n\nThe page started 6 months ago, grew fast for 2 months, then flatlined. Your friend posts once a day but barely anyone sees it.\n\nYour task: Create a 30-day revival plan.\n\nCurrent reality:\n- 10K followers, 50 likes/post (0.5% engagement rate)\n- Competitors with similar content get 5-10% engagement\n- Most posts are reposted from other pages\n- No unique content or posts about the page''s own followers\n- 70% of followers are from the same city\n- No video content (IG Reels) — only static images\n- The account has been inactive for 3 days (your friend gave up)\n\nWhat would you do differently? Be specific about content strategy, posting schedule, hashtags, and community building. How do you get from 50 to 500 likes in 30 days?',
   '00000000-0000-0000-0000-000000000001', true
 )
 ON CONFLICT (id) DO NOTHING;
 
--- 7. Verify
-SELECT 'Users:' AS label, count(*) FROM users
-UNION ALL SELECT 'Simulations:', count(*) FROM simulations;
+-- 6. Verify
+SELECT 'Simulations:' AS label, count(*) FROM simulations
+UNION ALL SELECT 'Columns updated:', 1;

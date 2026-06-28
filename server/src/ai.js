@@ -5,11 +5,7 @@ const NVIDIA_BASE_URL = 'https://integrate.api.nvidia.com/v1';
 
 let monthlyCalls = 0;
 const MONTHLY_LIMIT = 1000;
-let rateLimitReset = Date.now() + 60000;
-let minuteCount = 0;
-
 const cache = new Map();
-const API_TIMEOUT = 15000;
 
 export function getMonthlyUsage() {
   return { calls: monthlyCalls, limit: MONTHLY_LIMIT, remaining: MONTHLY_LIMIT - monthlyCalls };
@@ -20,20 +16,13 @@ async function generateWithNVIDIA(prompt, options = {}) {
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < 3600000) return cached.data;
 
-  if (monthlyCalls >= MONTHLY_LIMIT) {
-    console.warn('NVIDIA monthly limit reached');
-    return null;
-  }
-
-  if (Date.now() > rateLimitReset) { minuteCount = 0; rateLimitReset = Date.now() + 60000; }
-  if (minuteCount >= 15) return null;
-  minuteCount++;
+  if (monthlyCalls >= MONTHLY_LIMIT) return null;
 
   const model = options.model || 'meta/llama-3.1-8b-instruct';
-  const system = options.system || 'You are a helpful assistant.';
-
+  const system = options.system || 'You are a helpful mentor.';
+  const timeoutMs = options.timeout || 15000;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), API_TIMEOUT);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await fetch(`${NVIDIA_BASE_URL}/chat/completions`, {
@@ -58,11 +47,7 @@ async function generateWithNVIDIA(prompt, options = {}) {
 
     clearTimeout(timeout);
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error('NVIDIA API error:', response.status, errText);
-      return null;
-    }
+    if (!response.ok) return null;
 
     const data = await response.json();
     monthlyCalls++;
@@ -71,134 +56,96 @@ async function generateWithNVIDIA(prompt, options = {}) {
     return content;
   } catch (err) {
     clearTimeout(timeout);
-    console.error('NVIDIA request failed:', err.message);
     return null;
   }
 }
 
-const AI_MANAGER_SYSTEM = `You are a senior engineering manager at a tech company. You are managing a junior employee who has limited time to solve a real problem. Your personality:
-- Busy and slightly distracted (takes time to respond)
-- Gives vague requirements initially
-- Expects clarifying questions
-- Gets frustrated if asked obvious questions
-- Appreciates initiative and independent problem-solving
-- Changes priorities occasionally
+export async function getTutorResponse(simulation, userMessage, conversationHistory = []) {
+  const historyText = conversationHistory.slice(-6).map(m =>
+    `${m.role === 'user' ? 'Student' : 'Tutor'}: ${m.message}`
+  ).join('\n');
 
-Be realistic. Don't solve the problem for them. Keep responses under 150 words.`;
+  const prompt = `You are a friendly tutor helping a 12th grade student solve a challenge.
 
-export async function getAiManagerResponse(simulation, attempt, userMessage) {
-  const elapsed = Math.floor((Date.now() - new Date(attempt.started_at).getTime()) / 1000);
-  const h = Math.floor(elapsed / 3600);
-  const m = Math.floor((elapsed % 3600) / 60);
-  const remaining = Math.max(0, simulation.duration_hours - h);
+Challenge: ${simulation.title}
+Problem: ${simulation.description || simulation.problem_brief}
 
-  const prompt = `Current simulation: ${simulation.title}
-Problem brief: ${simulation.problem_brief}
-Participant message: ${userMessage}
-Time elapsed: ${h}h ${m}m
-Time remaining: ${remaining}h
+Previous conversation:
+${historyText || 'No prior conversation.'}
 
-Respond as the manager.`;
+Student's latest message: ${userMessage}
+
+Rules:
+- Respond in simple, clear English
+- NEVER give the answer directly. Ask guiding questions instead
+- Be encouraging and patient — like a smart older sibling
+- If the student is stuck, help them break the problem into smaller parts
+- Celebrate small wins: "Good thinking!", "That's a great start!", "You're on the right track"
+- Keep responses to 2-4 sentences
+- If the student asks "what should I do?", help them think it through step by step`;
 
   return generateWithNVIDIA(prompt, {
-    system: AI_MANAGER_SYSTEM,
+    system: 'You are a friendly, patient tutor who helps students learn by asking guiding questions. You never give direct answers. You speak in simple English and are always encouraging.',
     temperature: 0.7,
     max_tokens: 300,
     model: 'meta/llama-3.1-8b-instruct'
   });
 }
 
-export async function getCrisisInjection(simulation, attempt) {
-  const elapsed = Math.floor((Date.now() - new Date(attempt.started_at).getTime()) / 1000);
-  const h = Math.floor(elapsed / 3600);
-  const remaining = Math.max(0, simulation.duration_hours - h);
-  const previous = attempt.crisis_injections_received || '[]';
-
-  const prompt = `Determine if a crisis should be injected into this simulation attempt.
-
-Simulation: ${simulation.title}
-Industry: ${simulation.industry}
-Time elapsed: ${h}h
-Time remaining: ${remaining}h
-Crises already injected: ${previous}
-
-Rules:
-- Inject crisis at ~25% and ~60% of elapsed time
-- Crisis must be relevant to the simulation domain
-- Don't inject if participant is already struggling
-
-Return ONLY valid JSON:
-{"inject": true, "crisis_type": "requirements_change|teammate_conflict|resource_constraint|client_complaint", "crisis_message": "...", "severity": "low|medium|high"}
-or
-{"inject": false}`;
-
-  const result = await generateWithNVIDIA(prompt, {
-    system: 'You are the simulation controller. Return only valid JSON.',
-    temperature: 0.3,
-    max_tokens: 300,
-    model: 'meta/llama-3.1-8b-instruct'
-  });
-  if (!result) return { inject: false };
-  try { return JSON.parse(result); } catch { return { inject: false }; }
-}
-
 export async function evaluateAttempt(simulation, attempt) {
-  const prompt = `Evaluate this simulation attempt across 4 dimensions. Be objective, specific, and evidence-based.
+  const conversationHistory = typeof attempt.ai_conversation_history === 'string'
+    ? attempt.ai_conversation_history
+    : JSON.stringify(attempt.ai_conversation_history || []);
+  const solution = (attempt.solution_text || '').substring(0, 1000);
 
-SIMULATION: ${simulation.title}
-PROBLEM BRIEF: ${simulation.problem_brief}
-SOLUTION: ${attempt.solution_text}
-ITERATION LOG: ${attempt.iteration_log}
-AI CONVERSATION: ${attempt.ai_conversation_history}
-CRISIS RESPONSES: ${attempt.crisis_injections_received}
+  const history = JSON.parse(conversationHistory);
+  const candidateMsgs = (Array.isArray(history) ? history : [])
+    .filter(m => m.role === 'user')
+    .map((m, i) => `[${i + 1}]: ${(m.message || '').substring(0, 200)}`)
+    .join('\n');
 
-Return ONLY valid JSON:
+  const systemPrompt = `You are a fair evaluator. You assess students on 4 dimensions, giving a score 0-100 and specific evidence for each.
+
+DIMENSIONS:
+1. wrong_and_recovered — Can they admit mistakes and pivot? (If they were right from the start, score 50-70 with evidence "No mistake to recover from")
+2. pressure_communication — Do they communicate clearly and ask good questions?
+3. mid_process_pivot — Can they adapt when things change?
+4. unblocking_agency — Do they figure things out on their own?
+
+SCORING:
+- 80-100: Exceptional
+- 60-79: Solid
+- 40-59: Developing
+- 20-39: Below expectations
+- 0-19: Only if abusive or completely off-task
+
+Every "evidence" field MUST contain a specific quote from the student's messages.
+Return ONLY valid JSON. No markdown.`;
+
+  const userPrompt = `Evaluate this student's performance.
+
+SIMULATION: ${simulation.title} (${simulation.industry || 'Tech'})
+CANDIDATE'S MESSAGES:
+${candidateMsgs.substring(0, 2000) || 'No messages'}
+SOLUTION:
+${solution.substring(0, 500) || 'No solution'}
+
+Return JSON:
 {
-  "wrong_and_recovered": {"score": 0-100, "evidence": "..."},
-  "pressure_communication": {"score": 0-100, "evidence": "..."},
-  "mid_process_pivot": {"score": 0-100, "evidence": "..."},
-  "unblocking_agency": {"score": 0-100, "evidence": "..."},
-  "overall_percentile": "top X%",
-  "summary": "One-paragraph executive summary",
-  "strengths": ["..."],
-  "growth_areas": ["..."],
-  "hire_recommendation": "strong|conditional|not_recommended"
+  "wrong_and_recovered":{"score":0,"evidence":"","strength":"","growth_area":""},
+  "pressure_communication":{"score":0,"evidence":"","strength":"","growth_area":""},
+  "mid_process_pivot":{"score":0,"evidence":"","strength":"","growth_area":""},
+  "unblocking_agency":{"score":0,"evidence":"","strength":"","growth_area":""},
+  "overall":{"score":0,"summary":"","strengths":[],"areas_to_improve":[],"next_steps":[]}
 }`;
 
-  const result = await generateWithNVIDIA(prompt, {
-    system: 'You are an expert hiring evaluator with 20 years of experience.',
-    temperature: 0.2,
-    max_tokens: 2000,
-    model: 'meta/llama-3.1-70b-instruct'
+  const result = await generateWithNVIDIA(userPrompt, {
+    system: systemPrompt,
+    temperature: 0.1,
+    max_tokens: 800,
+    model: 'meta/llama-3.1-8b-instruct',
+    timeout: 60000
   });
   if (!result) return null;
   try { return JSON.parse(result); } catch { return null; }
-}
-
-export async function generateCredentialSummary(user, simulation, scores) {
-  const prompt = `Generate a 1-page executive summary for this candidate's credential profile.
-
-Candidate: ${user.full_name || user.email}
-Simulation: ${simulation.title}
-Industry: ${simulation.industry}
-Scores:
-- Wrong & Recovered: ${scores.wrong_and_recovered_score}/100
-- Pressure Communication: ${scores.pressure_communication_score}/100
-- Mid-Process Pivot: ${scores.mid_process_pivot_score}/100
-- Unblocking Agency: ${scores.unblocking_agency_score}/100
-
-Generate:
-1. One compelling opening sentence
-2. Three bullet points of evidence
-3. One sentence on what makes them unique
-4. Recommended role types
-
-Keep it under 200 words. Be specific.`;
-
-  return generateWithNVIDIA(prompt, {
-    system: 'You are a professional credential writer.',
-    temperature: 0.5,
-    max_tokens: 400,
-    model: 'meta/llama-3.1-8b-instruct'
-  });
 }
