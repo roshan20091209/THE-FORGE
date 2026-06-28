@@ -91,7 +91,7 @@ export default function Landing() {
             <div className="bg-emerald-900/20 border border-emerald-500/20 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-emerald-400 font-bold">✓</span>
-                <span className="text-sm font-medium text-emerald-300">OSM-BRO Forge</span>
+                <span className="text-sm font-medium text-emerald-300">OSM-BRO</span>
               </div>
               <div className="text-sm text-emerald-300/70 space-y-1">
                 <p><span className="text-emerald-400">Step 1:</span> State Coulomb's law [1 mark]</p>

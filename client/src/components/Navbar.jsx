@@ -7,8 +7,8 @@ export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const hidePaths = ['/login', '/register', '/auth/', '/profile', '/textbooks', '/ask', '/assignment', '/question-bank']
-  if (hidePaths.some(p => location.pathname.startsWith(p))) return null
+  const hidePaths = ['/login', '/register', '/auth/', '/attempts/', '/c/']
+  if (location.pathname === '/' || hidePaths.some(p => location.pathname.startsWith(p))) return null
 
   const handleLogout = () => {
     logout()
