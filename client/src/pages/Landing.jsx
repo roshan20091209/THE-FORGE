@@ -57,7 +57,7 @@ export default function Landing() {
                 Answers
               </h1>
               <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-8">
-                Forge knows your CBSE 2026-27 syllabus. Knows OSM marking. Knows what your professor's answer book says.
+                OSM-BRO knows your CBSE 2026-27 syllabus. Knows OSM marking. Knows what your professor's answer book says.
                 <br />
                 <span className="text-indigo-400 font-medium">Answers formatted step-by-step, exactly how CBSE wants.</span>
               </p>
@@ -177,9 +177,9 @@ export default function Landing() {
       {/* Social Proof */}
       <section className="py-12 border-t border-white/5">
         <div className="max-w-3xl mx-auto px-4 text-center">
-          <p className="text-slate-400 text-sm mb-2">Used by students at</p>
-          <p className="text-xl font-bold text-indigo-300">Chettinad Vidyashram • Class 12</p>
-          <p className="text-slate-500 text-sm mt-4">Built by a student, for students. No VCs. No paywalls. Just marks.</p>
+          <p className="text-slate-400 text-sm mb-2">Built by a 16 yr old with 0 budget</p>
+          <p className="text-xl font-bold text-indigo-300">for 12th graders who deserve full marks</p>
+          <p className="text-slate-500 text-sm mt-4">No VCs. No paywalls. Just marks.</p>
         </div>
       </section>
 
@@ -207,7 +207,7 @@ export default function Landing() {
             <img src="/forge.svg" alt="OSM-BRO" className="w-5 h-5" />
             <span className="text-indigo-400">OSM-BRO</span>
           </div>
-          <p>CBSE Class 12 Study AI — Chettinad Vidyashram</p>
+          <p>CBSE Class 12 Study AI — 0 budget, full marks</p>
         </div>
       </footer>
     </div>

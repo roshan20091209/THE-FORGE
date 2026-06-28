@@ -43,8 +43,8 @@ export default function Register() {
         className="card !p-8 w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-display font-bold">Join The Forge</h1>
-          <p className="text-forge-text-secondary text-sm mt-1">Start building proof that companies look for.</p>
+          <h1 className="text-2xl font-display font-bold">OSM-BRO</h1>
+          <p className="text-forge-text-secondary text-sm mt-1">Free CBSE study AI — no catch</p>
         </div>
 
         {error && (
