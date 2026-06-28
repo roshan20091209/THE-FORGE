@@ -18,7 +18,7 @@ export default function Landing() {
       <nav className="border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/forge.svg" alt="Forge" className="w-7 h-7" />
+            <img src="/forge.svg" alt="OSM-BRO" className="w-7 h-7" />
             <span className="font-bold text-lg">
               <span className="text-indigo-400">OSM-</span>BRO
             </span>
@@ -110,19 +110,19 @@ export default function Landing() {
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
             className="bg-indigo-900/10 border border-indigo-500/10 rounded-2xl p-6 md:p-8 relative">
             <Quote className="absolute top-4 left-4 w-8 h-8 text-indigo-500/20" />
-            <div className="relative z-10">
-              <p className="text-lg md:text-xl text-slate-300 italic leading-relaxed mb-4">
-                "Last year, our Physics sir never carried a book to class. This year? He's carrying an{' '}
+            <div className="relative z-10 space-y-4">
+              <p className="text-lg md:text-xl text-slate-300 italic leading-relaxed">
+                "Last year, our Math sir never carried a book to class. This year? He's carrying an{' '}
                 <span className="text-indigo-400 font-semibold not-italic">ANSWER BOOK</span>.
               </p>
-              <p className="text-lg md:text-xl text-slate-300 italic leading-relaxed mb-4">
+              <p className="text-lg md:text-xl text-slate-300 italic leading-relaxed">
                 Because CBSE introduced{' '}
                 <span className="text-amber-400 font-semibold not-italic">OSM — On-Screen Marking</span>.
                 The marking scheme changed. Students write one thing, the screen shows something else.
               </p>
               <p className="text-lg md:text-xl text-slate-300 italic leading-relaxed">
                 <span className="text-indigo-400 font-semibold not-italic">Even teachers are confused.</span>{' '}
-                But Forge isn't."
+                But OSM-BRO isn't."
               </p>
             </div>
           </motion.div>
@@ -201,11 +201,11 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-8">
+          <footer className="border-t border-white/5 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm text-slate-600">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <img src="/forge.svg" alt="forge" className="w-5 h-5" />
-            <span className="text-slate-400">OSM-BRO Forge V2</span>
+            <img src="/forge.svg" alt="OSM-BRO" className="w-5 h-5" />
+            <span className="text-indigo-400">OSM-BRO</span>
           </div>
           <p>CBSE Class 12 Study AI — Chettinad Vidyashram</p>
         </div>

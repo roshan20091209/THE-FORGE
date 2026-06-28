@@ -1,12 +1,12 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { MessageSquare, BookOpen, ClipboardList, User, Layers, GraduationCap } from 'lucide-react'
+import { MessageSquare, BookOpen, ClipboardList, User, GraduationCap, Layers } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
 const tabs = [
   { path: '/ask', label: 'Ask', icon: MessageSquare, auth: true },
   { path: '/textbooks', label: 'Books', icon: BookOpen, auth: true },
-  { path: '/', label: 'Forge', icon: Layers, exact: true },
+  { path: '/', label: 'OSM-BRO', icon: Layers, exact: true },
   { path: '/assignment', label: 'HW', icon: ClipboardList, auth: true },
   { path: '/question-bank', label: 'QBank', icon: GraduationCap, auth: true },
   { path: '/profile', label: 'Profile', icon: User, auth: true },
@@ -16,9 +16,9 @@ export default function BottomNav() {
   const location = useLocation()
   const { user } = useAuth()
 
-  const hidePaths = ['/login', '/register', '/auth/', '/attempts/', '/c/', '/question-bank']
+  const hidePaths = ['/login', '/register', '/auth/']
   if (hidePaths.some(p => location.pathname.startsWith(p))) return null
-  if (!user && !['/', '/simulations'].includes(location.pathname)) return null
+  if (!user && location.pathname !== '/') return null
 
   const isActive = (tab) => {
     if (tab.exact) return location.pathname === tab.path
@@ -34,29 +34,19 @@ export default function BottomNav() {
             const active = isActive(tab)
             const Icon = tab.icon
             return (
-              <Link
-                key={tab.path}
-                to={tab.path}
-                className="relative flex flex-col items-center justify-center gap-0.5 w-16 py-1"
-              >
+              <Link key={tab.path} to={tab.path}
+                className="relative flex flex-col items-center justify-center gap-0.5 w-14 py-1">
                 {active && (
-                  <motion.div
-                    layoutId="bottomNav"
-                    className="absolute -top-0.5 w-8 h-0.5 rounded-full bg-forge-accent"
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  />
+                  <motion.div layoutId="bottomNav"
+                    className="absolute -top-0.5 w-8 h-0.5 rounded-full bg-indigo-400"
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
                 )}
-                <Icon
-                  className={`w-5 h-5 transition-colors ${
-                    active ? 'text-forge-accent' : 'text-forge-text-muted'
-                  }`}
-                  fill={active ? '#6366F1' : 'none'}
-                />
+                <Icon className={`w-5 h-5 transition-colors ${
+                  active ? 'text-indigo-400' : 'text-forge-text-muted'
+                }`} fill={active ? '#6366F1' : 'none'} />
                 <span className={`text-[10px] leading-tight ${
-                  active ? 'text-forge-accent font-medium' : 'text-forge-text-muted'
-                }`}>
-                  {tab.label}
-                </span>
+                  active ? 'text-indigo-400 font-medium' : 'text-forge-text-muted'
+                }`}>{tab.label}</span>
               </Link>
             )
           })}
